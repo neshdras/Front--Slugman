@@ -1,0 +1,18 @@
+[{
+    "situation": [
+        {
+            "contexte": "Malala : “Bon, Slug, dis moi la vérité : tu m’aime? “",
+            "choix":[
+                {
+                    "description": "Beurk, non kestu racontes? jamais dla vie !",
+                    "reponse": "T’es serieux? ntm",
+                    "reputation": ""
+                }
+            ]
+        }
+    ]
+},
+{
+    "numberchap": 25
+}
+]
