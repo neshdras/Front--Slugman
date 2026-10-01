@@ -185,7 +185,7 @@
 
     "gamin_rude": {
       "type": "scene",
-      "text": "Le gamin baisse la tête et te regarde partir.",
+      "text": "Il reste bouche bée, mais n’oublieras jamais ces paroles...",
       "on_enter": { "score": -9 },
       "next": "checkpoint_jardin"
     },
@@ -209,14 +209,14 @@
 
     "gamin_frappe": {
       "type": "scene",
-      "text": "Tu traces ta route. Un grand frère de plus te cherche.",
+      "text": "Un grand frère de plus te cherche.",
       "on_enter": { "score": -13, "set_flags": { "grand_frere_cherche": true } },
       "next": "checkpoint_jardin"
     },
 
     "gamin_parrain": {
       "type": "scene",
-      "text": "Tu marches lentement, le dos droit. Personne ne te regarde, mais dans ta tête, tout le monde te regarde.",
+      "text": "Tu continues vers le jardin",
       "on_enter": { "score": 1 },
       "next": "checkpoint_jardin"
     },
@@ -284,9 +284,8 @@
       "text": "Tu envoies un chassé à la daronne et tu repars en marchant, comme si tu sortais d'un ring (t'as juste mis KO une mère au foyer de 57 ans). Le petit pleure et te suit, toute sa famille te cherche.",
       "on_enter": {
         "score": -19,
-        "set_flags": { "famille_gamin_te_cherche": true, "grand_frere_cherche": true, "gamin_avec_toi": true }
+        "set_flags": { "famille_gamin_te_cherche": true, "grand_frere_cherche": true, "gamin_avec_toi": false }
       },
-      "dev_note": "On suppose que le gamin te suit en pleurant (gamin_avec_toi = true). À ajuster.",
       "next": "checkpoint_jardin"
     },
 
@@ -483,8 +482,7 @@
       "text": "« Eh viens ici toi ! Viens viens tkt. C'est toi qui as emmerdé mon p'tit frère ? Non non me dis pas non, je sais que c'est toi, il vient de me le dire. »",
       "choices": [
         { "id": "bgf_excuses", "label": "Tu t'excuses et expliques que t'as changé, et que t'as plus important à faire. Il te demande une compensation, tu acceptes.", "next": "banc_compensation" },
-        { "id": "bgf_2v3", "label": "C'est fini de se laisser marcher dessus. Tu réponds, et proposes un 2v3 dans un coin tranquille.", "next": "banc_bagarre" },
-        { "id": "bgf_respect", "label": "T'expliques à Boro que pour changer le monde, faut commencer par se faire respecter. Vous vous éloignez, la bagarre éclate.", "next": "banc_bagarre" }
+        { "id": "bgf_2v3", "label": "C'est fini de se laisser marcher dessus. Tu réponds, et proposes un 2v3 dans un coin tranquille. T'expliques à Boro que pour changer le monde, faut commencer par se faire respecter. Vous vous éloignez, la bagarre éclate.", "next": "banc_bagarre" }
       ]
     },
 
@@ -520,7 +518,7 @@
     "banc_demande": {
       "type": "branch",
       "dialogue": [
-        { "speaker": "Grand frère", "text": "Eh toi ! Dis-moi, tu saurais pas où j'peux trouver un [truc que tu connais après un autre chapitre] ?" }
+        { "speaker": "Grand frère", "text": "Eh toi ! Dis-moi, tu saurais pas où j'peux trouver du zupulu ?" }
       ],
       "dev_note": "Le 'truc' sera défini dans un autre chapitre : flag sait_route_truc à activer là-bas.",
       "branches": [
@@ -531,7 +529,7 @@
 
     "banc_sait": {
       "type": "scene",
-      "text": "« Ouais c'est là-bas. » Il te remercie d'un hochement de tête. Vous continuez votre chemin.",
+      "text": "« Ouais bien sur, tu te lèves, tu pars à droite, puis à gauche, puis au bout de la rue c'est à droite » Il te remercie d'un hochement de tête. Vous continuez votre chemin.",
       "on_enter": { "score": 4 },
       "next": "jardin_ronde"
     },
@@ -554,9 +552,9 @@
     "banc_bluff": {
       "type": "scene",
       "speaker": "Grand frère",
-      "text": "« Mais t'en sais rien en fait ? Tu te fous de ma gueule ? Ça t'amuse ? » Vous continuez votre chemin avant qu'il se lève.",
+      "text": "« Mais t'en sais rien en fait ? Tu te fous de ma gueule ? Ça t'amuse pti bouffon ? »",
       "on_enter": { "score": -8, "set_flags": { "bluff_banc": true } },
-      "next": "jardin_ronde"
+      "next": "banc_bagarre"
     },
 
     "jardin_ronde": {
@@ -570,16 +568,27 @@
 
     "mission_surveillance": {
       "type": "scene",
-      "text": "Vous partez donc en mission de surveillance. Vous décidez de faire des tours du jardin, boire des cafés, manger des glaces, tout en gardant l'œil ouvert. Vers la sortie du jardin, vous repérez 5 loubards. Vous observez discrètement, et remarquez un comportement louche. L'impression qu'ils protègent la poubelle à côté d'eux, jusqu'à ce que l'un d'eux sorte quelque chose de la poubelle et le donne à un autre loubard qui les a rejoints.",
+      "text": "Vous partez donc en mission de surveillance. Vous décidez de faire des tours du jardin, boire des cafés, manger des glaces, tout en gardant l'œil ouvert.",
+      "next": "reperage"
+
+    },
+
+    "reperage":{
+      "type": "scene",
+      "text": "Vers la sortie du jardin, vous repérez 5 loubards. Vous observez discrètement, et remarquez un comportement louche. L’impression qu’ils protègent la poubelle à coté d’eux, jusqu’a ce que l’un d’eux sorte quelque chose de la poubelle et le donne à un autre loubard qui les a rejoins. ",
       "choices": [
         { "id": "ms_filature", "label": "Tu décides de les prendre en filature et de les attaquer quand le moment sera opportun.", "next": "filature" },
-        { "id": "ms_sauter", "label": "Tu décides de leur sauter dessus. Ces loubards sont déjà sous substances, donc leur supériorité numérique ne fera pas grande différence en combat.", "next": "rixe" }
+        { "id": "ms_indices", "label": "Tu décides rester calme et de récolter des informations pour plus tard.", "next": "indices" }
       ]
     },
 
     "mission_nettoyage": {
       "type": "scene",
       "text": "Vous partez donc en mission de « nettoyage ». Vous décidez de faire des tours du jardin, dans un seul but : trouver des loubards. Au bout de 5/10 min de recherche, vous tombez sur 5 loubards, près de la sortie du jardin, sur un banc proche d'une poubelle. L'un d'eux vient de récupérer quelque chose dedans. Ils sont sans doute en train de vendre la mort, hors de question de laisser passer ça.",
+      "choices": [
+        { "id": "ms_filature", "label": "Tu décides de les prendre en filature et de les attaquer quand le moment sera opportun.", "next": "filature" },
+        { "id": "ms_sauter", "label": "Tu décides de leur sauter dessus. Ces loubards sont déjà sous substances, donc leur supériorité numérique ne fera pas grande différence en combat.", "next": "rixe" }
+      ],
       "on_enter": { "score": -10 },
       "next": "rixe"
     },
@@ -742,7 +751,7 @@
       "choices": [
         { "id": "hh_vengeance", "label": "La vengeance ne se négocie pas. Vous massacrez tout le monde.", "next": "hall_massacre_vengeance", "condition": { "flag": "gamin_mort" } },
         { "id": "hh_gosse", "label": "Où est le gosse ?", "next": "hall_gosse", "condition": { "flag": "gamin_enleve" } },
-        { "id": "hh_ecouter", "label": "Les écouter.", "next": "hall_negociation" }
+        { "id": "hh_ecouter", "label": "“Bah on en a marre de vous en gros, la délinquance tout ça, et ouais faut arreter. ", "next": "hall_negociation" }
       ]
     },
 
@@ -786,22 +795,33 @@
       "type": "ending",
       "title": "Fin d'histoire",
       "text": "Tu finis par les rejoindre, et traîner tous les jours avec eux.",
-      "on_enter": { "score": -21 }
+      "on_enter": { "score": -8 }
     },
 
     "hall_negociation": {
       "type": "scene",
-      "dialogue": [
-        { "speaker": "Loubard", "text": "Bah on en a marre de vous en gros, la délinquance tout ça, et ouais faut arrêter." },
-        { "speaker": "Loubard", "text": "Donc ce qu'on va faire, c'est que soit vous dégagez et vous trouvez un taff comme tout le monde, soit on appelle la police." },
-        { "speaker": "Loubard", "text": "Donc on va vous renvoyer dans votre pays et vous nous casserez plus les couilles." },
-        { "speaker": "Loubard", "text": "Mais t'as un taff toi-même ?" },
-        { "speaker": "Slug", "text": "..." }
-      ],
       "choices": [
-        { "id": "hn_insulter", "label": "« Allez nique ta mère, Spiderman. »", "next": "hall_bagarre_sanglante" },
-        { "id": "hn_partir", "label": "Déconcerté par cette répartie, tu te rends compte que tu n'es rien de plus qu'un chômeur délinquant, tout comme eux. « Viens, on se casse. »", "next": "hall_abandon" }
+        { "id": "hn_raciste", "label": "« ...donc on va vous renvoyez dans votre pays et vous nous casserez plus les couilles »", "next": "hall_bagarre_sanglante" },
+        { "id": "hn_appellepolice", "label": "...donc cqon va faire, c’est que soit vous dégagez et vous trouvez un taff comme tout le monde, soit on appelle la police »", "next": "hall_spiderman" }
       ]
+    },
+
+
+    "hall_spiderman": {
+      "type": "scene",
+      "dialogue": [
+        { "speaker": "Loubard", "text": "mais t’as un taff toi même?" },
+        { "speaker": "Slug", "text": "..." },
+        { "speaker": "Loubard", "text": "aller nique moi ta mère de la spiderman" }
+      ],
+      "on_enter": { "score": 11 },
+    "next": "hall_chomeur"
+    },
+
+    "hall_chomeur": {
+      "type": "chapter_end",
+      "text": "Déconcerté par cette répartie, tu te rends compte que tu n’es rien de plus qu’un chômeur délinquant, tout comme eux. “Viens, on se casse”. Vous rentrez dépité, sans un mot sur le chemin du retour. ",
+      "return_to": "map"
     },
 
     "hall_abandon": {
@@ -828,7 +848,24 @@
         { "condition": { "flag": "gamin_mort" }, "next": "boss_vengeance" },
         { "condition": { "flag": "gamin_enleve" }, "next": "boss_gosse" }
       ],
-      "default": "boss_arrestation"
+      "default": "boss_face_a_face"
+    },
+
+    "boss_face_a_face": {
+        "type": "scene",
+        "generated": true,
+        "text": "Le loubard repose sa liasse et vous toise, sans bouger de son fauteuil.",
+        "choices": [
+            { "id": "bf_arrestation", "label": "« C'est fini gros lardon, rends-toi. Tu vas aller en prison. »", "next": "boss_arrestation" },
+            { "id": "bf_massacre", "label": "« On vient te niquer ta mère. »", "next": "boss_massacre" }
+        ]
+        },
+        "boss_massacre": {
+        "type": "scene",
+        "generated": true,
+        "text": "Seul contre vous, même affaibli, il n'a aucune chance. Vous le massacrez sans relâche. En moins de 10 minutes, le loubard gît par terre dans une mare de sang. Pourtant, rien ne semble avoir changé en toi. À part une empathie qui s'estompe petit à petit...",
+        "on_enter": { "score": -21, "set_flags": { "empathie_perdue": true } },
+        "next": "fin_rentre_chez_toi"
     },
 
     "boss_vengeance": {

@@ -52,6 +52,7 @@ export function terminalKind(node) {
   if (node.type === 'hub' && !node.next) return 'chapter_end'; // fin du chapitre 1
   if (node.type === 'game_over') return 'game_over';
   if (node.type === 'ending') return 'ending';
+  if (node.return_to === 'map') return 'chapter_end';
   return null;
 }
 

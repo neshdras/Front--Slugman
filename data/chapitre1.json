@@ -157,12 +157,17 @@
         {
           "id": "bar_refuser",
           "label": "Non dsl mais c'est un peu une idée de merde, je préfère rentrer, trql.",
-          "next": "bar_refus"
+          "next": "jeune_dispute"
         },
         {
           "id": "bar_accepter",
           "label": "Bonne idée, let's go.",
           "next": "suivre_femmes"
+        },
+        {
+          "id": "bar_refusgentil",
+          "label": "C’est une super idée... mais jpeu pas venir, je dois nourrir mon chat. Bonne chance",
+          "next": "bar_refus"
         }
       ]
     },
@@ -175,7 +180,6 @@
           "pote_laisse_apres_bar": true
         }
       },
-      "dev_note": "Peripéties ici ? Non, route tranquille en soi.",
       "next": "situation_2"
     },
     "suivre_femmes": {
@@ -358,7 +362,7 @@
       "choices": [
         {
           "id": "justifier_ignorer",
-          "label": "Tu l'ignores. De toute façon, tu resteras fidèle à Malala.",
+          "label": "Qui est cette étrange femme? tu ne sauras sans doute jamais... De toute façon, je resterais fidèle à Malala",
           "next": "femme_ignoree"
         },
         {
@@ -414,7 +418,7 @@
     },
     "route_sdf": {
       "type": "scene",
-      "text": "Tu reprends la route vers chez toi... sans but... Entre 2 poubelles de la traversée, un SDF t'interpelle : « Approche, approche... t'as pas l'air bien, mon grand. Tu veux boire un coup ? » Il te montre sa gourde.",
+      "text": "Tu reprends la route vers chez toi... sans but... Entre 2 poubelles de la traversée, un SDF t'interpelle : « Approche, approche... t'as pas l'air bien, mon grand. Tu veux boire un coup ? » Il te montre sa gourdasse.",
       "choices": [
         {
           "id": "sdf_insulter",
@@ -435,7 +439,7 @@
     },
     "sdf_insulte": {
       "type": "scene",
-      "text": "Le SDF te regarde, blessé. Tu rentres chez toi.",
+      "text": "Le SDF te regarde, un peu choqué de l'enculé que tu es. Tu rentres chez toi.",
       "on_enter": {
         "score": -15,
         "set_flags": {
@@ -446,7 +450,7 @@
     },
     "sdf_pieces": {
       "type": "scene",
-      "text": "Il te remercie d'un sourire édenté. Tu rentres chez toi, le coeur un peu plus léger.",
+      "text": "Il te remercie et te souhaite une bonne soirée. Tu rentres chez toi, le coeur un peu plus léger.",
       "on_enter": {
         "score": 9,
         "set_flags": {
@@ -469,7 +473,7 @@
     },
     "telephone_detruit": {
       "type": "scene",
-      "text": "Qui va oser faire quoi ? Tu te sens étrangement bien...",
+      "text": "Qui va faire quoi ? Tu te sens étrangement bien...",
       "on_enter": {
         "score": -12,
         "set_flags": {
