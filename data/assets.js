@@ -4,10 +4,10 @@ const fileId = (path) => path.split('/').pop().replace(/\.[^.]+$/, '');
 const toMap = (files) => Object.fromEntries(Object.entries(files).map(([p, url]) => [fileId(p), url]));
 
 const BACKGROUNDS = toMap(
-  import.meta.glob('../assets/bg/*.{webp,jpg,jpeg,png}', { eager: true, query: '?url', import: 'default' })
+  import.meta.glob('../src/assets/bg/*.{webp,jpg,jpeg,png}', { eager: true, query: '?url', import: 'default' })
 );
 const SPRITES = toMap(
-  import.meta.glob('../assets/characters/*.{png,webp}', { eager: true, query: '?url', import: 'default' })
+  import.meta.glob('../src/assets/characters/*.{png,webp}', { eager: true, query: '?url', import: 'default' })
 );
 
 const warned = new Set();
@@ -28,7 +28,14 @@ export function bgUrl(id) {
 }
 
 export function slugUrl(pose) {
-  if (pose && SPRITES[`slugman_${pose}`]) return SPRITES[`slugman_${pose}`];
-  if (pose) warnOnce(`pose introuvable : "slugman_${pose}", image par défaut utilisée`);
-  return SPRITES.slugman ?? null;
+  if (!pose) return SPRITES.slugman_base ?? null;
+
+  // 1. Cherche si la clé existe telle quelle (ex: "slugman_base")
+  if (SPRITES[pose]) return SPRITES[pose];
+
+  // 2. Cherche avec le préfixe (ex: "base" -> "slugman_base")
+  if (SPRITES[`slugman_${pose}`]) return SPRITES[`slugman_${pose}`];
+
+  // 3. Fallback sur l'image de base si la pose demandée n'existe pas
+  return SPRITES.slugman_base ?? null;
 }

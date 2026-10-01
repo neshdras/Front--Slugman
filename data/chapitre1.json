@@ -85,7 +85,7 @@
       "type": "scene",
       "speaker": "Malala",
       "bg": "parcpied", 
-      "pose": "base",
+      "pose": "slugman_base",
       "text": "Bon, Slug, dis moi la vérité : tu m'aimes ?",
       "choices": [
         {
@@ -123,6 +123,7 @@
     },
     "rue_seul": {
       "type": "scene",
+      "pose": "perdu",
       "text": "Elle part. Tu es tout seul dans la rue, tout le monde te regarde.",
       "choices": [
         {
@@ -139,6 +140,8 @@
     },
     "bar_entree": {
       "type": "scene",
+      "bg": "bar", 
+      "pose": "boit",
       "text": "Tu rentres dans le bar, commandes une pinte, et scrolles sans but sur ton téléphone... jusqu'à ce que tu sentes une main sur ton épaule. « Hé, comment ça va le boss ? »",
       "next": "bar_discussion",
       "on_enter": {
@@ -175,6 +178,8 @@
     },
     "bar_refus": {
       "type": "scene",
+      "bg": "ruesortiebar", 
+      "pose": "slugman_base",
       "text": "Le mec est content, toi t'as passé du bon temps. Tu lui as peut-être donné un but dans la vie.",
       "on_enter": {
         "score": 5,
@@ -186,6 +191,8 @@
     },
     "suivre_femmes": {
       "type": "scene",
+      "bg": "ruesortiebar",
+      "pose": "slugman_base",
       "text": "T'y vas. Tu trouves 2 femmes seules. Vous décidez de les suivre.",
       "choices": [
         {
@@ -202,6 +209,7 @@
     },
     "vieille_scene": {
       "type": "scene",
+      "bg": "ruesortiebar",
       "text": "Un homme s'approche de la femme par derrière. Avant même qu'il ne la touche, tu décides :",
       "choices": [
         {
@@ -243,6 +251,7 @@
     },
     "jeune_scene": {
       "type": "scene",
+      "bg": "ruesortiebar",
       "text": "Un homme s'approche de la femme par derrière. Avant même qu'il ne la touche, tu décides :",
       "choices": [
         {
@@ -267,6 +276,8 @@
     },
     "jeune_dispute": {
       "type": "scene",
+      "bg": "ruesortiebar", 
+      "pose": "bagarre",
       "text": "Tu dis à ton pote : « Nn c'est abusé, viens on rentre. » Vous n'êtes pas d'accord, une bagarre éclate.",
       "choices": [
         {
@@ -283,6 +294,7 @@
     },
     "jeune_sol_laisse": {
       "type": "scene",
+      "pose": "parterre",
       "text": "Il se relève et t'éclate la gueule. Tu te réveilles 3h plus tard, sans portefeuille, et tu rentres chez toi.",
       "on_enter": {
         "score": -2,
@@ -311,6 +323,7 @@
     },
     "fin_secours": {
       "type": "scene",
+      "pose": "slugman_base",
       "text": "Les secours arrivent. Tu rentres chez toi.",
       "on_enter": {
         "score": -15,
@@ -322,6 +335,7 @@
     },
     "fin_mort": {
       "type": "scene",
+      "pose": "slugman_base",
       "text": "Tu le laisses gésir et rentres chez toi. Il décède, mais tu ne le sais pas.",
       "on_enter": {
         "score": -37,
@@ -334,6 +348,8 @@
     },
     "loubard_bagarre": {
       "type": "scene",
+      "bg": "devantparc",
+      "pose": "bagarre",
       "text": "Le loubard ne fait pas le poids. Tu lui éclates la gueule et restes gisant sur le sol... mais ta rage t'a aveuglé, et les passants te regardent, apeurés. L'un d'eux te filme...",
       "choices": [
         {
@@ -360,6 +376,7 @@
     },
     "justifier": {
       "type": "scene",
+      "pose": "slugman_base",
       "text": "Tout le monde te siffle, sauf une jeune femme, qui te regarde d'un air compréhensif...",
       "choices": [
         {
@@ -420,6 +437,8 @@
     },
     "route_sdf": {
       "type": "scene",
+      "bg": "ruelle",
+      "pose": "slugman_base",
       "text": "Tu reprends la route vers chez toi... sans but... Entre 2 poubelles de la traversée, un SDF t'interpelle : « Approche, approche... t'as pas l'air bien, mon grand. Tu veux boire un coup ? » Il te montre sa gourdasse.",
       "choices": [
         {
@@ -463,6 +482,7 @@
     },
     "sdf_boit": {
       "type": "scene",
+      "pose": "boit",
       "text": "Son breuvage est de l'eau de vie à base de composants d'ordinateur. Il te fait part de ses problèmes, notamment qu'il se fait bully par les baveux. Tu t'endors, te réveilles à l'aube, et rentres chez toi.",
       "on_enter": {
         "score": 13,
@@ -475,6 +495,8 @@
     },
     "telephone_detruit": {
       "type": "scene",
+      "bg": "devantparc",
+      "pose": "slugman_base",
       "text": "Qui va faire quoi ? Tu te sens étrangement bien...",
       "on_enter": {
         "score": -12,
@@ -487,6 +509,8 @@
     },
     "avenue_baveux": {
       "type": "scene",
+      "bg": "avenuesoir",
+      "pose": "slugman_base",
       "text": "Tu passes par l'avenue pour rentrer. Tu passes devant les baveux. Ils se foutent de ta gueule.",
       "choices": [
         {
@@ -530,6 +554,7 @@
     "baveux_riposte": {
       "type": "game_over",
       "title": "Perdu",
+      "pose": "parterre",
       "text": "Les baveux sont très puissants. 50 mètres plus tard, une berline noire s'arrête, 3 colosses sortent, te cassent la gueule et te dépouillent.",
       "on_enter": {
         "add_items": [
@@ -540,6 +565,7 @@
     },
     "cri": {
       "type": "scene",
+      "pose": "slugman_base",
       "text": "Tu cries « Je vous baise tous, vous comprenez rien ! »",
       "on_enter": {
         "score": -14,
@@ -570,6 +596,7 @@
     },
     "police_rendu": {
       "type": "scene",
+      "pose": "perdu",
       "text": "Après avoir parlé avec eux, ils ont pitié de toi et te laissent rentrer chez toi, après t'avoir obligé à les payer un peu.",
       "on_enter": {
         "set_flags": {
@@ -580,6 +607,7 @@
     },
     "fuite_mur": {
       "type": "scene",
+      "bg": "choixpotager",
       "text": "Tu te retrouves devant un mur. Tu as le choix entre tourner dans la ruelle à droite, ou sauter par-dessus un mur dans une propriété à gauche.",
       "on_enter": {
         "score": -10
@@ -617,6 +645,7 @@
     },
     "bagarre_flics": {
       "type": "scene",
+      "pose": "bagarre",
       "text": "Tu finis gagnant, mais amoché, et avec un avis de recherche. Tu rentres chez toi discrètement.",
       "on_enter": {
         "score": -22,
@@ -628,6 +657,7 @@
     },
     "mur_saute": {
       "type": "scene",
+      "pose": "slugman_base",
       "text": "Tu les as semés. Tu rentres chez toi, après avoir massacré le potager d'un citadin.",
       "on_enter": {
         "score": -1,

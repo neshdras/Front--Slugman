@@ -120,11 +120,11 @@ export default function PlayPage() {
 
   return (
     <main className="play">
-      <header className="hud">
         <div className="stage" aria-hidden="true">
             {bg && <div key={bg} className="stage__bg" style={{ backgroundImage: `url(${bg})` }} />}
             {slug && <img className="stage__slug" src={slug} alt="" />}
         </div>
+      <header className="hud">
         <button className="btn btn--ghost" onClick={toMap}>Carte</button>
         <p className="hud__chapter">Chapitre {chapter.number} · {chapter.title}</p>
         <p className="hud__stat">Morale <strong>{session.state.score}</strong></p>

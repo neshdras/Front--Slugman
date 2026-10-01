@@ -15,9 +15,9 @@ export function AuthProvider({ children }) {
       return;
     }
     api('/auth/me')
-      .then((data) => setUser(data.user ?? data))
+      .then((data) => {console.log('Réponse /auth/me :', data); setUser(data.user ?? data)})
       .catch((err) => {
-        if (err.status === 401) localStorage.removeItem(TOKEN_KEY); // token expiré/invalide
+        console.error('Erreur /auth/me :', err); localStorage.removeItem(TOKEN_KEY); // token expiré/invalide
       })
       .finally(() => setLoading(false));
   }, []);
