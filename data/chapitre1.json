@@ -84,6 +84,8 @@
     "depart": {
       "type": "scene",
       "speaker": "Malala",
+      "bg": "parcpied", 
+      "pose": "base",
       "text": "Bon, Slug, dis moi la vérité : tu m'aimes ?",
       "choices": [
         {

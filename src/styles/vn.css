@@ -100,3 +100,15 @@ button { font: inherit; cursor: pointer; }
 .panel__reset { margin-top: .4rem; padding-top: .8rem; border-top: 2px solid var(--encre); display: grid; gap: .6rem; justify-items: start; width: 100%; }
 .panel__reset p { margin: 0; font-size: .95rem; }
 .panel__reset-actions { display: flex; gap: .6rem; flex-wrap: wrap; }
+
+
+.play { position: relative; overflow: hidden; }
+.hud, .scene { position: relative; z-index: 1; }
+.stage { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.stage__bg { position: absolute; inset: 0; background-size: cover; background-position: center; animation: stage-in .6s ease-out; }
+.stage__bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(16, 23, 34, .35), transparent 30%, rgba(16, 23, 34, .75)); }
+.stage__slug { position: absolute; bottom: 0; left: 3%; height: min(72vh, 680px); width: auto; max-width: 60%; object-fit: contain; object-position: bottom left; filter: drop-shadow(0 6px 0 rgba(16, 23, 34, .5)); }
+@keyframes stage-in { from { opacity: 0; } }
+.choice { background: rgba(16, 23, 34, .82); }
+@media (max-width: 640px) { .stage__slug { height: 48vh; left: -4%; } }
+@media (prefers-reduced-motion: reduce) { .stage__bg { animation: none; } }

@@ -6,7 +6,7 @@ import { evalCondition } from './condition';
 
 const MAX_HOPS = 100; // garde-fou contre une boucle de noeuds automatiques
 
-const cloneState = (s) => ({ score: s.score, flags: { ...s.flags }, items: [...s.items] });
+const cloneState = (s) => ({ score: s.score, flags: { ...s.flags }, items: [...s.items], bg: s.bg ?? null, pose: s.pose ?? null, });
 const namedOf = (chapter) => chapter.data.meta.named_conditions ?? {};
 const hasContent = (n) => Boolean(n.text || n.dialogue?.length || n.choices?.length);
 
@@ -68,6 +68,8 @@ export function advance(chapter, fromId, state, rng = Math.random) {
     const entered = applyOnEnter(state, node.on_enter);
     state = entered.state;
     gained.push(...entered.gained);
+    if (node.bg !== undefined) state.bg = node.bg;
+    if (node.pose !== undefined) state.pose = node.pose;
 
     if (node.type === 'random') {
       id = pickWeighted(node.outcomes, rng);
@@ -102,6 +104,8 @@ export function getView(chapter, nodeId, state) {
     title: node.title ?? null,
     beats,
     choices,
+    bg: state.bg ?? null,
+    pose: state.pose ?? null,
     kind: terminalKind(node),
     unlockMessage: node.unlock_message ?? null,
   };

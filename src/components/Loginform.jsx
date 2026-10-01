@@ -14,16 +14,14 @@ function LoginForm() {
 
     async function handleSubmit(e) {
         e.preventDefault()
-        console.log('submit')
         const controller = new AbortController()
 
         try {
             setLoading(true)
             setError(null)
             const data = await authService.login(email, password, controller.signal)
-            console.log('réponse login :', data)
             if (!data?.token || !data?.user) {
-            throw new Error('Réponse du serveur inattendue (token ou user manquant)')
+                throw new Error('Réponse du serveur inattendue (token ou user manquant)')
             }
             saveSession(data.token, data.user)
             navigate('/map')

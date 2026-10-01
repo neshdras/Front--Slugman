@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useGame } from '../context/GameContext.jsx';
 import { ITEMS } from '../../data/chapterList.js.js';
+import { bgUrl, slugUrl } from '../../data/assets.js';
 
 // Affiche le texte lettre par lettre (instantané si l'utilisateur réduit les animations).
 function useTypewriter(text, cps = 70) {
@@ -114,10 +115,16 @@ export default function PlayPage() {
 
   const { view, chapter, session, gained } = game;
   const toMap = () => navigate('/map');
+  const bg = bgUrl(view.bg);
+  const slug = slugUrl(view.pose);
 
   return (
     <main className="play">
       <header className="hud">
+        <div className="stage" aria-hidden="true">
+            {bg && <div key={bg} className="stage__bg" style={{ backgroundImage: `url(${bg})` }} />}
+            {slug && <img className="stage__slug" src={slug} alt="" />}
+        </div>
         <button className="btn btn--ghost" onClick={toMap}>Carte</button>
         <p className="hud__chapter">Chapitre {chapter.number} · {chapter.title}</p>
         <p className="hud__stat">Morale <strong>{session.state.score}</strong></p>

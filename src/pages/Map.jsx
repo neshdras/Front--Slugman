@@ -41,7 +41,7 @@ const hasProgress = progress.story.completed.length > 0 || session
 
   const selected = chapters.find((c) => c.id === selectedId);
   const status = statusOf(selected, game);
-  const fame = 50 + progress.story.state.score;
+  const fame = progress.story.state.score;
   const otherRunning = session && session.chapterId !== selected.id;
 
   const play = () => {
