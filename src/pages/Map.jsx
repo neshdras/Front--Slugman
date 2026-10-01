@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { useGame } from '../context/GameContext.jsx';
 
 function statusOf(ch, { progress, session, isUnlocked }) {
-  if (progress.story.completed.includes(ch.id)) return 'done';
+  if (progress?.story.completed.includes(ch.id)) return 'done';
   if (session?.chapterId === ch.id) return 'current';
   return isUnlocked(ch) ? 'open' : 'locked';
 }
@@ -20,7 +20,7 @@ export default function MapPage() {
   const game = useGame();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const { chapters, progress, session, startChapter } = game;
+  const { ready, chapters, progress, session, startChapter } = game;
   const { resetAll } = game
   const [confirmReset, setConfirmReset] = useState(false)
 
@@ -28,6 +28,10 @@ export default function MapPage() {
     const open = chapters.find((c) => ['current', 'open'].includes(statusOf(c, game)));
     return (open ?? chapters[chapters.length - 1]).id;
   });
+
+  if (!ready || !progress) {
+    return <div className="splash">Chargement de la carte…</div>;
+  }
 
 
 const replay = () => {
