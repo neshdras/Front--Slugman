@@ -415,7 +415,7 @@
 
     "checkpoint_jardin": {
       "type": "checkpoint",
-      "bg": "ruesortiebar", 
+      "bg": "jardin", 
       "pose": "jardin",
       "text": "Tu arrives au jardin et tu rejoins Boro.",
       "next": "boro_dialogue"
