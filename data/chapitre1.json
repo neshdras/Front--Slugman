@@ -1,0 +1,642 @@
+{
+  "meta": {
+    "title": "Situation de départ",
+    "version": 1,
+    "start": "depart",
+    "schema": {
+      "node.type": "scene | branch | random | checkpoint | chapter_end | ending | game_over | hub",
+      "node.on_enter": "{ score: number, set_flags: {flag: bool}, add_items: [itemId] } appliqué à l'arrivée sur le noeud",
+      "node.next": "passage automatique vers un autre noeud (sans choix)",
+      "node.choices": "[{ id, label, next, disabled?, condition? }]",
+      "node.outcomes": "pour type=random : [{ next, weight }] tirage pondéré",
+      "condition": "{ flag, equals? } | { item } | { score_gte } | { score_lt } | { all: [] } | { any: [] } | { not: {} } | { ref } : voir chapitre2.json pour la grammaire complète"
+    }
+  },
+  "initial_state": {
+    "score": 0,
+    "flags": {
+      "pote_bar_rencontre": false,
+      "pote_laisse_apres_bar": false,
+      "pote_arrete": false,
+      "pote_hospitalise": false,
+      "pote_mort": false,
+      "reputation_mechant": false,
+      "portefeuille_perdu": false,
+      "vieille_sauvee": false,
+      "contact_pote_garde": false,
+      "telephone_detruit": false,
+      "grand_frere_vengeance": false,
+      "femme_a_ta_carte": false,
+      "femme_a_refuse": false,
+      "sdf_a_recu_pieces": false,
+      "nuit_avec_sdf": false,
+      "quete_baveux_debloquee": false,
+      "baveux_ennemis": false,
+      "baveux_ont_ta_carte": false,
+      "avis_de_recherche": false,
+      "flics_payes": false,
+      "potager_massacre": false,
+      "route_bar": false,
+      "route_loubard": false,
+      "a_crie": false,
+      "a_justifie": false,
+      "sdf_insulte": false,
+      "declaration_amour": false
+    },
+    "items": []
+  },
+  "flags": {
+    "pote_bar_rencontre": "Tu as rencontré l'inconnu du bar (utile plus tard)",
+    "pote_laisse_apres_bar": "Tu as laissé ton pote après le bar : possibilité de le recroiser plus tard",
+    "pote_arrete": "Ton pote s'est fait embarquer par les flics",
+    "pote_hospitalise": "Ton pote est à l'hôpital (tu as appelé les secours)",
+    "pote_mort": "Ton pote est mort : tu es réputé méchant",
+    "reputation_mechant": "Réputation de méchant (conséquence de pote_mort)",
+    "portefeuille_perdu": "Plus de portefeuille : impact plus tard",
+    "vieille_sauvee": "Tu as sauvé la vieille dame : peut la recroiser plus tard / peut donner un objet ?",
+    "contact_pote_garde": "Tu as le contact de ton pote du bar",
+    "telephone_detruit": "Tu as détruit le téléphone du petit qui filmait",
+    "grand_frere_vengeance": "Le grand frère du petit veut se venger (conséquence de telephone_detruit)",
+    "femme_a_ta_carte": "La jeune femme a gardé ta carte : elle te rappelle plus tard",
+    "femme_a_refuse": "La jeune femme a jeté ta carte : tu la recroises et elle te vanne",
+    "sdf_a_recu_pieces": "Tu as donné tes pièces au SDF : il t'aide plus tard",
+    "nuit_avec_sdf": "Tu as passé la nuit avec le SDF",
+    "quete_baveux_debloquee": "Quête contre les baveux débloquée (via la nuit avec le SDF)",
+    "baveux_ennemis": "Tu as ignoré les baveux sans les oublier",
+    "baveux_ont_ta_carte": "Les baveux t'ont donné leur carte",
+    "avis_de_recherche": "Tu es recherché par la police",
+    "flics_payes": "Tu as payé les flics pour qu'ils te laissent partir",
+    "potager_massacre": "Tu as massacré le potager d'un citadin",
+    "route_bar": "Tu as choisi d'aller au bar de la Marine",
+    "route_loubard": "Tu as choisi de t'en prendre au loubard",
+    "a_crie": "Tu as crié « je vous baise tous » devant les passants",
+    "a_justifie": "Tu as essayé de te justifier devant les passants",
+    "sdf_insulte": "Tu as insulté le SDF : mauvais terme",
+    "declaration_amour": "Tu as avoué à Malala que tu l'aimais"
+  },
+  "items": {
+    "carte_handicape": {
+      "name": "Carte handicapé",
+      "description": "De héros à zéro."
+    }
+  },
+  "nodes": {
+    "depart": {
+      "type": "scene",
+      "speaker": "Malala",
+      "text": "Bon, Slug, dis moi la vérité : tu m'aimes ?",
+      "choices": [
+        {
+          "id": "depart_non",
+          "label": "Beurk, non kestu racontes ? Jamais de la vie !",
+          "next": "reponse_non"
+        },
+        {
+          "id": "depart_oui",
+          "label": "Oui, je t'aime secrètement depuis 10 ans, tu m'obsèdes...",
+          "next": "reponse_oui"
+        }
+      ]
+    },
+    "reponse_non": {
+      "type": "scene",
+      "speaker": "Malala",
+      "text": "T'es sérieux ? ntm",
+      "on_enter": {
+        "score": -5
+      },
+      "next": "rue_seul"
+    },
+    "reponse_oui": {
+      "type": "scene",
+      "speaker": "Malala",
+      "text": "T'es flippant, dégage.",
+      "on_enter": {
+        "score": -5,
+        "set_flags": {
+          "declaration_amour": true
+        }
+      },
+      "next": "rue_seul"
+    },
+    "rue_seul": {
+      "type": "scene",
+      "text": "Elle part. Tu es tout seul dans la rue, tout le monde te regarde.",
+      "choices": [
+        {
+          "id": "rue_bar",
+          "label": "Dépité, plein de honte, tu décides d'aller au Bar de la Marine.",
+          "next": "bar_entree"
+        },
+        {
+          "id": "rue_loubard",
+          "label": "Rempli de rage, tu vois un membre des loubards, sans doute en train de zoner et vandaliser... Tu vas le nsm.",
+          "next": "loubard_bagarre"
+        }
+      ]
+    },
+    "bar_entree": {
+      "type": "scene",
+      "text": "Tu rentres dans le bar, commandes une pinte, et scrolles sans but sur ton téléphone... jusqu'à ce que tu sentes une main sur ton épaule. « Hé, comment ça va le boss ? »",
+      "next": "bar_discussion",
+      "on_enter": {
+        "set_flags": {
+          "route_bar": true
+        }
+      }
+    },
+    "bar_discussion": {
+      "type": "scene",
+      "text": "Tu discutes jusqu'à la fermeture avec cet inconnu, qui sera utile plus tard, et tu oublies un peu ton début de soirée. En sortant, il te demande : « T'as raison, nsm la société : viens, on change le monde. On va suivre des meufs dans la rue, et dès qu'elles se font emmerder, on va s'occuper des gros bâtards ! »",
+      "on_enter": {
+        "set_flags": {
+          "pote_bar_rencontre": true
+        }
+      },
+      "choices": [
+        {
+          "id": "bar_refuser",
+          "label": "Non dsl mais c'est un peu une idée de merde, je préfère rentrer, trql.",
+          "next": "bar_refus"
+        },
+        {
+          "id": "bar_accepter",
+          "label": "Bonne idée, let's go.",
+          "next": "suivre_femmes"
+        }
+      ]
+    },
+    "bar_refus": {
+      "type": "scene",
+      "text": "Le mec est content, toi t'as passé du bon temps. Tu lui as peut-être donné un but dans la vie.",
+      "on_enter": {
+        "score": 5,
+        "set_flags": {
+          "pote_laisse_apres_bar": true
+        }
+      },
+      "dev_note": "Peripéties ici ? Non, route tranquille en soi.",
+      "next": "situation_2"
+    },
+    "suivre_femmes": {
+      "type": "scene",
+      "text": "T'y vas. Tu trouves 2 femmes seules. Vous décidez de les suivre.",
+      "choices": [
+        {
+          "id": "suivre_vieille",
+          "label": "La vieille dame",
+          "next": "vieille_scene"
+        },
+        {
+          "id": "suivre_jeune",
+          "label": "La jeune",
+          "next": "jeune_scene"
+        }
+      ]
+    },
+    "vieille_scene": {
+      "type": "scene",
+      "text": "Un homme s'approche de la femme par derrière. Avant même qu'il ne la touche, tu décides :",
+      "choices": [
+        {
+          "id": "vieille_sauter",
+          "label": "De sauter sur le mec.",
+          "next": "vieille_sauvee"
+        },
+        {
+          "id": "vieille_dessouler",
+          "label": "Tu commences à dessouler, et tu te rends compte que tu suis une femme seule la nuit.",
+          "next": "vieille_fuite"
+        }
+      ]
+    },
+    "vieille_sauvee": {
+      "type": "scene",
+      "text": "Le mec était en effet en train de lui voler son sac. La mamie vous remercie. Tu es très content, tu prends le contact du mec et rentres chez toi heureux.",
+      "on_enter": {
+        "score": 12,
+        "set_flags": {
+          "vieille_sauvee": true,
+          "contact_pote_garde": true
+        }
+      },
+      "dev_note": "La vieille peut donner un objet ? (à décider)",
+      "next": "situation_2"
+    },
+    "vieille_fuite": {
+      "type": "scene",
+      "text": "Tu pars en courant. Ton collègue saute sur le mec, mais tu croises les flics sur ta route. Les flics vont voir ce qui se passe et embarquent ton collègue. Tu rentres transpirant, un peu honteux.",
+      "on_enter": {
+        "score": -8,
+        "set_flags": {
+          "pote_arrete": true,
+          "pote_laisse_apres_bar": true
+        }
+      },
+      "next": "situation_2"
+    },
+    "jeune_scene": {
+      "type": "scene",
+      "text": "Un homme s'approche de la femme par derrière. Avant même qu'il ne la touche, tu décides :",
+      "choices": [
+        {
+          "id": "jeune_sauter",
+          "label": "De sauter sur le mec.",
+          "next": "jeune_gene"
+        },
+        {
+          "id": "jeune_dessouler",
+          "label": "Tu commences à dessouler, et tu te rends compte que tu suis une femme seule la nuit.",
+          "next": "jeune_dispute"
+        }
+      ]
+    },
+    "jeune_gene": {
+      "type": "scene",
+      "text": "La femme crie d'arrêter, et vous vous rendez compte que c'était son mec qui la taquinait. C'est très gênant. Tu rentres chez toi en pleurant, seul.",
+      "on_enter": {
+        "score": -10
+      },
+      "next": "situation_2"
+    },
+    "jeune_dispute": {
+      "type": "scene",
+      "text": "Tu dis à ton pote : « Nn c'est abusé, viens on rentre. » Vous n'êtes pas d'accord, une bagarre éclate.",
+      "choices": [
+        {
+          "id": "dispute_sol_laisser",
+          "label": "Tu le mets au sol, puis tu le laisses et commences à rentrer.",
+          "next": "jeune_sol_laisse"
+        },
+        {
+          "id": "dispute_massacre",
+          "label": "Tu le mets au sol, et tu le massacres jusqu'à ce qu'il devienne inconscient.",
+          "next": "jeune_massacre"
+        }
+      ]
+    },
+    "jeune_sol_laisse": {
+      "type": "scene",
+      "text": "Il se relève et t'éclate la gueule. Tu te réveilles 3h plus tard, sans portefeuille, et tu rentres chez toi.",
+      "on_enter": {
+        "score": -2,
+        "set_flags": {
+          "portefeuille_perdu": true,
+          "pote_laisse_apres_bar": true
+        }
+      },
+      "next": "situation_2"
+    },
+    "jeune_massacre": {
+      "type": "scene",
+      "text": "Il ne bouge plus. Qu'est-ce que tu fais ?",
+      "choices": [
+        {
+          "id": "massacre_secours",
+          "label": "Tu appelles les secours avant de rentrer chez toi.",
+          "next": "fin_secours"
+        },
+        {
+          "id": "massacre_laisser",
+          "label": "Tu le laisses gésir et rentres chez toi.",
+          "next": "fin_mort"
+        }
+      ]
+    },
+    "fin_secours": {
+      "type": "scene",
+      "text": "Les secours arrivent. Tu rentres chez toi.",
+      "on_enter": {
+        "score": -15,
+        "set_flags": {
+          "pote_hospitalise": true
+        }
+      },
+      "next": "situation_2"
+    },
+    "fin_mort": {
+      "type": "scene",
+      "text": "Tu le laisses gésir et rentres chez toi. Il décède, mais tu ne le sais pas.",
+      "on_enter": {
+        "score": -37,
+        "set_flags": {
+          "pote_mort": true,
+          "reputation_mechant": true
+        }
+      },
+      "next": "situation_2"
+    },
+    "loubard_bagarre": {
+      "type": "scene",
+      "text": "Le loubard ne fait pas le poids. Tu lui éclates la gueule et restes gisant sur le sol... mais ta rage t'a aveuglé, et les passants te regardent, apeurés. L'un d'eux te filme...",
+      "choices": [
+        {
+          "id": "loubard_justifier",
+          "label": "Tu essaies de te justifier comme tu peux.",
+          "next": "justifier"
+        },
+        {
+          "id": "loubard_telephone",
+          "label": "Tu t'avances vers le petit qui filme, et tu détruis son téléphone.",
+          "next": "telephone_detruit"
+        },
+        {
+          "id": "loubard_cri",
+          "label": "Tu cries « Je vous baise tous, vous comprenez rien ! »",
+          "next": "cri"
+        }
+      ],
+      "on_enter": {
+        "set_flags": {
+          "route_loubard": true
+        }
+      }
+    },
+    "justifier": {
+      "type": "scene",
+      "text": "Tout le monde te siffle, sauf une jeune femme, qui te regarde d'un air compréhensif...",
+      "choices": [
+        {
+          "id": "justifier_ignorer",
+          "label": "Tu l'ignores. De toute façon, tu resteras fidèle à Malala.",
+          "next": "femme_ignoree"
+        },
+        {
+          "id": "justifier_carte",
+          "label": "Tu n'as plus rien à perdre. Tu vas vers elle et tu joues la carte super-héros mystérieux : « Voilà ma carte, appelle-moi. »",
+          "next": "carte_random"
+        }
+      ],
+      "on_enter": {
+        "set_flags": {
+          "a_justifie": true
+        }
+      }
+    },
+    "femme_ignoree": {
+      "type": "scene",
+      "text": "Qui est cette étrange femme ? Tu ne le sauras sans doute jamais...",
+      "next": "route_sdf"
+    },
+    "carte_random": {
+      "type": "random",
+      "dev_note": "Random pour le fun entre les deux issues.",
+      "outcomes": [
+        {
+          "next": "carte_gardee",
+          "weight": 50
+        },
+        {
+          "next": "carte_jetee",
+          "weight": 50
+        }
+      ]
+    },
+    "carte_gardee": {
+      "type": "scene",
+      "text": "Elle garde ta carte et te regarde quand tu pars. Peut-être le début d'une nouvelle histoire ?",
+      "on_enter": {
+        "set_flags": {
+          "femme_a_ta_carte": true
+        }
+      },
+      "next": "situation_2"
+    },
+    "carte_jetee": {
+      "type": "scene",
+      "text": "Elle jette ta carte et te crache dessus. Belle journée de merde.",
+      "on_enter": {
+        "set_flags": {
+          "femme_a_refuse": true
+        }
+      },
+      "next": "situation_2"
+    },
+    "route_sdf": {
+      "type": "scene",
+      "text": "Tu reprends la route vers chez toi... sans but... Entre 2 poubelles de la traversée, un SDF t'interpelle : « Approche, approche... t'as pas l'air bien, mon grand. Tu veux boire un coup ? » Il te montre sa gourde.",
+      "choices": [
+        {
+          "id": "sdf_insulter",
+          "label": "« Va voir là-bas si j'y suis, espèce de vieux tocard. »",
+          "next": "sdf_insulte"
+        },
+        {
+          "id": "sdf_decliner",
+          "label": "Tu déclines gentiment, la gourde n'inspire pas confiance. Tu lui donnes les pièces qu'il te reste et lui souhaites une bonne soirée.",
+          "next": "sdf_pieces"
+        },
+        {
+          "id": "sdf_boire",
+          "label": "« J'ai rien à perdre de toute façon. » Tu t'assois et commences à discuter, en buvant son étrange breuvage.",
+          "next": "sdf_boit"
+        }
+      ]
+    },
+    "sdf_insulte": {
+      "type": "scene",
+      "text": "Le SDF te regarde, blessé. Tu rentres chez toi.",
+      "on_enter": {
+        "score": -15,
+        "set_flags": {
+          "sdf_insulte": true
+        }
+      },
+      "next": "situation_2"
+    },
+    "sdf_pieces": {
+      "type": "scene",
+      "text": "Il te remercie d'un sourire édenté. Tu rentres chez toi, le coeur un peu plus léger.",
+      "on_enter": {
+        "score": 9,
+        "set_flags": {
+          "sdf_a_recu_pieces": true
+        }
+      },
+      "next": "situation_2"
+    },
+    "sdf_boit": {
+      "type": "scene",
+      "text": "Son breuvage est de l'eau de vie à base de composants d'ordinateur. Il te fait part de ses problèmes, notamment qu'il se fait bully par les baveux. Tu t'endors, te réveilles à l'aube, et rentres chez toi.",
+      "on_enter": {
+        "score": 13,
+        "set_flags": {
+          "nuit_avec_sdf": true,
+          "quete_baveux_debloquee": true
+        }
+      },
+      "next": "situation_2"
+    },
+    "telephone_detruit": {
+      "type": "scene",
+      "text": "Qui va oser faire quoi ? Tu te sens étrangement bien...",
+      "on_enter": {
+        "score": -12,
+        "set_flags": {
+          "telephone_detruit": true,
+          "grand_frere_vengeance": true
+        }
+      },
+      "next": "avenue_baveux"
+    },
+    "avenue_baveux": {
+      "type": "scene",
+      "text": "Tu passes par l'avenue pour rentrer. Tu passes devant les baveux. Ils se foutent de ta gueule.",
+      "choices": [
+        {
+          "id": "baveux_ignorer",
+          "label": "Les baveux sont très puissants. Tu les ignores, mais tu ne les oublies pas.",
+          "next": "baveux_ignores"
+        },
+        {
+          "id": "baveux_regarder",
+          "label": "Tu les regardes dans les yeux, sans émotions.",
+          "next": "baveux_regard"
+        },
+        {
+          "id": "baveux_riposter",
+          "label": "« Sucez ma bite. »",
+          "next": "baveux_riposte"
+        }
+      ]
+    },
+    "baveux_ignores": {
+      "type": "scene",
+      "text": "Tu rentres chez toi, déterminé à faire bouger les choses. Les baveux ne sont que des hommes après tout, et l'argent et le pouvoir ne font pas tout.",
+      "on_enter": {
+        "score": -1,
+        "set_flags": {
+          "baveux_ennemis": true
+        }
+      },
+      "next": "situation_2"
+    },
+    "baveux_regard": {
+      "type": "scene",
+      "text": "Les baveux sont intrigués, et te donnent leur carte. Tu souris, et pars en hochant la tête.",
+      "on_enter": {
+        "set_flags": {
+          "baveux_ont_ta_carte": true
+        }
+      },
+      "next": "situation_2"
+    },
+    "baveux_riposte": {
+      "type": "game_over",
+      "title": "Perdu",
+      "text": "Les baveux sont très puissants. 50 mètres plus tard, une berline noire s'arrête, 3 colosses sortent, te cassent la gueule et te dépouillent.",
+      "on_enter": {
+        "add_items": [
+          "carte_handicape"
+        ]
+      },
+      "unlock_message": "Objet débloqué : Carte handicapé, de héros à zéro."
+    },
+    "cri": {
+      "type": "scene",
+      "text": "Tu cries « Je vous baise tous, vous comprenez rien ! »",
+      "on_enter": {
+        "score": -14,
+        "set_flags": {
+          "a_crie": true
+        }
+      },
+      "next": "police_interpelle"
+    },
+    "police_interpelle": {
+      "type": "scene",
+      "text": "Tu pars la tête haute, dans la grande rue principale. Les flics t'interpellent : « Hé, vous là-bas ! »",
+      "on_enter": {
+        "score": -7
+      },
+      "choices": [
+        {
+          "id": "police_fuir",
+          "label": "Tu ne te retournes pas, et cours le plus vite possible.",
+          "next": "fuite_mur"
+        },
+        {
+          "id": "police_rendre",
+          "label": "Tu te rends pacifiquement.",
+          "next": "police_rendu"
+        }
+      ]
+    },
+    "police_rendu": {
+      "type": "scene",
+      "text": "Après avoir parlé avec eux, ils ont pitié de toi et te laissent rentrer chez toi, après t'avoir obligé à les payer un peu.",
+      "on_enter": {
+        "set_flags": {
+          "flics_payes": true
+        }
+      },
+      "next": "situation_2"
+    },
+    "fuite_mur": {
+      "type": "scene",
+      "text": "Tu te retrouves devant un mur. Tu as le choix entre tourner dans la ruelle à droite, ou sauter par-dessus un mur dans une propriété à gauche.",
+      "on_enter": {
+        "score": -10
+      },
+      "choices": [
+        {
+          "id": "mur_ruelle",
+          "label": "Tu choisis la ruelle.",
+          "next": "ruelle_cerne"
+        },
+        {
+          "id": "mur_sauter",
+          "label": "Tu sautes le mur.",
+          "next": "mur_saute"
+        }
+      ]
+    },
+    "ruelle_cerne": {
+      "type": "scene",
+      "text": "Tu es cerné.",
+      "choices": [
+        {
+          "id": "cerne_rendre",
+          "label": "Tu te rends.",
+          "next": "police_rendu",
+          "disabled": true,
+          "disabled_reason": "Choix grisé, impossible"
+        },
+        {
+          "id": "cerne_bagarre",
+          "label": "Tu choisis la bagarre.",
+          "next": "bagarre_flics"
+        }
+      ]
+    },
+    "bagarre_flics": {
+      "type": "scene",
+      "text": "Tu finis gagnant, mais amoché, et avec un avis de recherche. Tu rentres chez toi discrètement.",
+      "on_enter": {
+        "score": -22,
+        "set_flags": {
+          "avis_de_recherche": true
+        }
+      },
+      "next": "situation_2"
+    },
+    "mur_saute": {
+      "type": "scene",
+      "text": "Tu les as semés. Tu rentres chez toi, après avoir massacré le potager d'un citadin.",
+      "on_enter": {
+        "score": -1,
+        "set_flags": {
+          "potager_massacre": true
+        }
+      },
+      "next": "situation_2"
+    },
+    "situation_2": {
+      "type": "hub",
+      "title": "Situation 2 : Rentre seul chez lui.",
+      "text": "Tu rentres seul chez toi.",
+      "dev_note": "Point de convergence de toutes les branches. Lis les flags ici pour adapter la suite (voir 'flags' pour les conséquences prévues).",
+      "next": null
+    }
+  }
+}

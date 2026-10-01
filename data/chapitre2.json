@@ -1,0 +1,1121 @@
+{
+  "meta": {
+    "chapter": 2,
+    "title": "Jardin des melons chauds",
+    "start": "ch2_intro",
+    "uses_state_from": "scenario.json (chapitre 1) : score, flags, items",
+    "schema": {
+      "node.type": "scene | branch | random | checkpoint | chapter_end | ending | game_over",
+      "node.on_enter": "{ score, set_flags: {flag: bool}, add_items: [itemId] } appliqué à l'arrivée sur le noeud",
+      "node.dialogue": "[{ speaker, text }] répliques affichées avant le texte / les choix",
+      "node.text_variants": "[{ condition, text }] : premier match remplace 'text'",
+      "node.next": "enchaînement automatique",
+      "node.choices": "[{ id, label, next, condition?, disabled?, disabled_reason? }] : choix masqué si condition fausse",
+      "node.branches": "type=branch : [{ condition, next }] premier match gagne, sinon 'default'. Un 'text' optionnel est affiché avant l'évaluation",
+      "node.generated": "true = contenu écrit par Claude (absent du schéma d'origine), à relire",
+      "condition": "{ flag, equals? (défaut true) } | { item } | { score_gte } | { score_lt } | { all: [] } | { any: [] } | { not: {} } | { ref: nom_dans_named_conditions }"
+    },
+    "named_conditions": {
+      "bon_terme_inconnu": { "all": [ { "flag": "pote_bar_rencontre" }, { "not": { "any": [ { "flag": "pote_arrete" }, { "flag": "pote_hospitalise" }, { "flag": "pote_mort" }, { "flag": "portefeuille_perdu" } ] } } ] },
+      "bon_terme_sdf": { "any": [ { "flag": "sdf_a_recu_pieces" }, { "flag": "nuit_avec_sdf" } ] },
+      "mauvais_terme_sdf": { "flag": "sdf_insulte" },
+      "route_sdf_visitee": { "any": [ { "flag": "sdf_a_recu_pieces" }, { "flag": "nuit_avec_sdf" }, { "flag": "sdf_insulte" } ] },
+      "un_grand_frere_te_cherche": { "any": [ { "flag": "grand_frere_vengeance" }, { "flag": "grand_frere_cherche" } ] },
+      "mere_hostile": { "any": [ { "flag": "telephone_detruit" }, { "flag": "a_crie" } ] }
+    },
+    "requires_chapter_1_flags": [
+      "route_bar", "route_loubard", "a_crie", "a_justifie", "sdf_insulte", "declaration_amour",
+      "pote_bar_rencontre", "pote_arrete", "pote_hospitalise", "pote_mort", "portefeuille_perdu",
+      "telephone_detruit", "grand_frere_vengeance", "avis_de_recherche", "flics_payes",
+      "sdf_a_recu_pieces", "nuit_avec_sdf", "quete_baveux_debloquee", "baveux_ennemis",
+      "baveux_ont_ta_carte", "vieille_sauvee", "reputation_mechant"
+    ]
+  },
+
+  "state_additions": {
+    "flags": {
+      "grand_frere_cherche": false,
+      "justicier_avec_toi": false,
+      "sdf_visite_detour": false,
+      "gamin_avec_toi": false,
+      "gamin_marque": false,
+      "gamin_enleve": false,
+      "gamin_mort": false,
+      "famille_gamin_te_cherche": false,
+      "boro_en_retard": false,
+      "malala_reconciliee": false,
+      "malala_rupture": false,
+      "malala_lesbienne": false,
+      "objectif_loubards": false,
+      "objectif_baveux": false,
+      "renfort_inconnu": false,
+      "renfort_sdf": false,
+      "sait_route_truc": false,
+      "bluff_banc": false,
+      "hangar_connu": false,
+      "boro_bras_perdu": false,
+      "empathie_perdue": false,
+      "a_vole_loubard": false,
+      "nord_gardes_reperes": false,
+      "nord_alerte": false,
+      "nord_invite": false,
+      "vieille_aide": false,
+      "preuves_baveux": false,
+      "allie_des_baveux": false,
+      "boro_decu": false
+    }
+  },
+
+  "flags": {
+    "grand_frere_cherche": "Un grand frère de plus te cherche (s'ajoute à grand_frere_vengeance)",
+    "justicier_avec_toi": "L'inconnu du bar (le justicier) t'accompagne",
+    "sdf_visite_detour": "Tu es passé dire bonjour au SDF",
+    "gamin_avec_toi": "Le gamin de 7 ans est avec toi",
+    "gamin_marque": "Le gamin n'oubliera jamais tes paroles",
+    "gamin_enleve": "Le gamin a été emmené par les loubards",
+    "gamin_mort": "Le gamin est mort : tu veux te venger",
+    "famille_gamin_te_cherche": "Toute la famille du gamin te cherche",
+    "boro_en_retard": "Tu as fait attendre Boro",
+    "malala_reconciliee": "Excuses mutuelles avec Malala",
+    "malala_rupture": "Malala ne veut plus te voir",
+    "malala_lesbienne": "Malala t'a expliqué pourquoi elle te calcule pas",
+    "objectif_loubards": "Objectif choisi : secouer les loubards (jardin)",
+    "objectif_baveux": "Objectif choisi : faire tomber les baveux (tours triplées)",
+    "renfort_inconnu": "Tu as appelé l'inconnu du bar en renfort",
+    "renfort_sdf": "Tu es parti chercher le SDF en renfort",
+    "sait_route_truc": "PLACEHOLDER : tu connais le 'truc' que cherchent les grands frères (à définir dans un autre chapitre)",
+    "bluff_banc": "Tu as bluffé les grands frères du banc",
+    "hangar_connu": "Tu connais l'emplacement du hangar",
+    "boro_bras_perdu": "Boro a perdu un bras",
+    "empathie_perdue": "Ton empathie s'estompe",
+    "a_vole_loubard": "Tu as volé le loubard",
+    "nord_gardes_reperes": "Tu as repéré la relève des gardes aux tours triplées",
+    "nord_alerte": "L'alarme a été déclenchée aux tours triplées",
+    "nord_invite": "Les baveux t'attendent (carte)",
+    "vieille_aide": "La vieille dame t'a aidé aux tours triplées",
+    "preuves_baveux": "Tu as des preuves contre les baveux",
+    "allie_des_baveux": "Tu t'es allié aux baveux",
+    "boro_decu": "Boro est déçu de toi"
+  },
+
+  "items": {
+    "pass_xboite": { "name": "Pass xboite", "description": "VIP pour la boîte de nuit du centre-ville." },
+    "carte_magnetique": { "name": "Carte magnétique", "description": "Volée chez les loubards." },
+    "liasse_loubard": { "name": "Grosse liasse", "description": "Volée chez les loubards." },
+    "montre_loubard": { "name": "Montre", "description": "Volée chez les loubards." },
+    "badge_concierge": { "name": "Badge de concierge", "description": "Donné par la vieille dame. Ouvre l'ascenseur de service." },
+    "pass_baveux": { "name": "Pass des baveux", "description": "Le prix de ta loyauté." }
+  },
+
+  "nodes": {
+
+    "ch2_intro": {
+      "type": "scene",
+      "title": "Chapitre 2 : Jardin des melons chauds",
+      "text": "Tu décides donc de te diriger vers le jardin des melons chauds. Tu appelles Boro et Malala pour traîner avec eux, mais seul Boro accepte. Tu le rejoins là-bas. Sur le chemin, tu décides de :",
+      "choices": [
+        { "id": "intro_malala", "label": "Essayer de convaincre Malala de venir aussi", "next": "malala_appel" },
+        { "id": "intro_justicier", "label": "Passer prendre ton nouveau pote le justicier", "next": "detour_justicier", "condition": { "ref": "bon_terme_inconnu" } },
+        { "id": "intro_sdf", "label": "Faire un détour pour dire bonjour au SDF de l'autre fois", "next": "detour_sdf", "condition": { "ref": "route_sdf_visitee" } },
+        { "id": "intro_roller", "label": "Y aller en glissant, comme ça tu t'entraînes un peu", "next": "roller_chute" }
+      ]
+    },
+
+    "detour_justicier": {
+      "type": "scene",
+      "text": "Tu passes chercher l'inconnu du bar. Il est ravi : « Enfin de l'action ! » Il t'accompagne jusqu'au jardin.",
+      "on_enter": { "set_flags": { "justicier_avec_toi": true } },
+      "dev_note": "Branche non détaillée dans le schéma : texte de liaison ajouté.",
+      "next": "checkpoint_jardin"
+    },
+
+    "detour_sdf": {
+      "type": "scene",
+      "text": "Tu fais un détour pour dire bonjour au SDF. Il te salue d'un coup de gourde et te souhaite bonne route.",
+      "on_enter": { "set_flags": { "sdf_visite_detour": true } },
+      "dev_note": "Branche non détaillée dans le schéma : texte de liaison ajouté.",
+      "next": "checkpoint_jardin"
+    },
+
+    "roller_chute": {
+      "type": "scene",
+      "text": "Tu renverses un gamin qui faisait du roller. C'est pas trop grave, mais ça fait chier.",
+      "on_enter": { "score": -6 },
+      "choices": [
+        { "id": "roller_excuse_c", "label": "Tu te retournes, t'excuses et l'aides à te relever.", "next": "roller_excuse" },
+        { "id": "roller_ignore_c", "label": "Tu traces ta route et ignores cet avorton.", "next": "roller_ignore" }
+      ]
+    },
+
+    "roller_ignore": {
+      "type": "scene",
+      "text": "Tu traces ta route sans te retourner. Un grand frère de plus te cherche, mais ça, tu ne le sais pas encore.",
+      "on_enter": { "score": -5, "set_flags": { "grand_frere_cherche": true } },
+      "next": "checkpoint_jardin"
+    },
+
+    "roller_excuse": {
+      "type": "branch",
+      "text": "Tu te retournes, t'excuses et l'aides à te relever.",
+      "on_enter": { "score": 2 },
+      "branches": [
+        { "condition": { "flag": "route_loubard" }, "next": "gamin_loubard" },
+        { "condition": { "flag": "route_bar" }, "next": "gamin_bar" }
+      ],
+      "default": "gamin_bar"
+    },
+
+    "gamin_loubard": {
+      "type": "scene",
+      "speaker": "Gamin",
+      "text": "« Eh mais t'es le mec qui a cassé la gueule au loubard hier ? Les gens étaient choqués mais c'est parce qu'ils sont nuls, c'était trop cool ! Apprends-moi 2-3 trucs stp stp stp ! »",
+      "choices": [
+        { "id": "gl_accepter", "label": "« Ouais pk pas, tu seras mon apprenti aujourd'hui, et si je t'aime bien tu continues. »", "next": "gamin_accepte" },
+        { "id": "gl_rude", "label": "« Tu sais pas regarder à droite et à gauche avant de traverser et tu veux faire le héros ? Eh vas-y, va là-bas. »", "next": "gamin_rude" },
+        { "id": "gl_sage", "label": "« Tu sais fils, ce que tu perçois de moi est très loin de qui je suis. Reste loin de moi, et fais attention à qui tu donnes du crédit... »", "next": "gamin_sage" }
+      ]
+    },
+
+    "gamin_accepte": {
+      "type": "scene",
+      "text": "Les yeux du petit brillent. Vous partez ensemble vers le jardin.",
+      "on_enter": { "score": 9, "set_flags": { "gamin_avec_toi": true } },
+      "next": "mere_rencontre"
+    },
+
+    "gamin_rude": {
+      "type": "scene",
+      "text": "Le gamin baisse la tête et te regarde partir.",
+      "on_enter": { "score": -9 },
+      "next": "checkpoint_jardin"
+    },
+
+    "gamin_sage": {
+      "type": "scene",
+      "text": "Il reste bouche bée, mais n'oubliera jamais ces paroles...",
+      "on_enter": { "score": 7, "set_flags": { "gamin_marque": true } },
+      "next": "checkpoint_jardin"
+    },
+
+    "gamin_bar": {
+      "type": "scene",
+      "speaker": "Gamin",
+      "text": "« Dégage gros gluant, tu pues, t'es moche, casse-toi. » Il te repousse.",
+      "choices": [
+        { "id": "gb_frapper", "label": "Tu lui en mets une, pas deux, et tu traces ta route.", "next": "gamin_frappe" },
+        { "id": "gb_parrain", "label": "« Ne joue pas au grand avec plus grand que toi, fils. » Et tu marches lentement vers ta destination, en te prenant pour le parrain.", "next": "gamin_parrain" }
+      ]
+    },
+
+    "gamin_frappe": {
+      "type": "scene",
+      "text": "Tu traces ta route. Un grand frère de plus te cherche.",
+      "on_enter": { "score": -13, "set_flags": { "grand_frere_cherche": true } },
+      "next": "checkpoint_jardin"
+    },
+
+    "gamin_parrain": {
+      "type": "scene",
+      "text": "Tu marches lentement, le dos droit. Personne ne te regarde, mais dans ta tête, tout le monde te regarde.",
+      "on_enter": { "score": 1 },
+      "next": "checkpoint_jardin"
+    },
+
+    "mere_rencontre": {
+      "type": "scene",
+      "text": "En chemin, tu tombes sur la mère du petit, qui le cherchait partout et qui se demande pourquoi son fils de 7 ans traîne dans la rue avec un inconnu (majeur).",
+      "choices": [
+        { "id": "mere_begayer", "label": "« Ah dsl, je savais pas qu'il avait une maman... euh enfin si... » Tu bégayes et tu lui rends le gosse.", "next": "mere_gosse_rendu" },
+        { "id": "mere_expliquer", "label": "Tu lui expliques que c'est lui qui a demandé, et que tu vas juste lui montrer 2 ou 3 tricks de karaté.", "next": "mere_branch" }
+      ]
+    },
+
+    "mere_gosse_rendu": {
+      "type": "scene",
+      "text": "Tu lui rends le gosse. Elle te regarde comme on regarde quelqu'un qu'on ne veut jamais revoir.",
+      "on_enter": { "set_flags": { "gamin_avec_toi": false } },
+      "next": "checkpoint_jardin"
+    },
+
+    "mere_branch": {
+      "type": "branch",
+      "branches": [
+        { "condition": { "ref": "mere_hostile" }, "next": "mere_hostile" }
+      ],
+      "default": "mere_clemente"
+    },
+
+    "mere_clemente": {
+      "type": "scene",
+      "text": "« Hmmm, je t'ai vu hier, tu m'as pas l'air méchant... » Tu le ramènes donc au jardin.",
+      "on_enter": { "score": 2 },
+      "next": "checkpoint_jardin"
+    },
+
+    "mere_hostile": {
+      "type": "scene",
+      "speaker": "La mère",
+      "text": "« Je t'ai vu hier, t'es un gros malade mental toi ! Qu'est-ce que tu fais avec un enfant ?! » Elle appelle la police et hurle. Tu sais plus où te mettre...",
+      "choices": [
+        { "id": "mh_justifier", "label": "Tu essaies de te justifier.", "next": "mere_justifier" },
+        { "id": "mh_fuir", "label": "Tu te barres en courant, mort de honte.", "next": "mere_fuite" },
+        { "id": "mh_kick", "label": "Tu envoies un chassé à la daronne et tu repars en marchant, comme si tu sortais d'un ring.", "next": "mere_kick" }
+      ]
+    },
+
+    "mere_justifier": {
+      "type": "game_over",
+      "title": "Perdu",
+      "text": "Tu essaies de te justifier. La mère fait mine de comprendre, discute avec toi pour gagner du temps, le temps que la police arrive. Tu finis en garde à vue...",
+      "on_enter": { "score": -6 },
+      "scope": "chapter",
+      "dev_note": "Perdu (partie ou chapitre ?) : à décider."
+    },
+
+    "mere_fuite": {
+      "type": "scene",
+      "text": "Tu te barres en courant, mort de honte. Le petit reste planté là.",
+      "on_enter": { "score": -8, "set_flags": { "gamin_avec_toi": false } },
+      "next": "checkpoint_jardin"
+    },
+
+    "mere_kick": {
+      "type": "scene",
+      "text": "Tu envoies un chassé à la daronne et tu repars en marchant, comme si tu sortais d'un ring (t'as juste mis KO une mère au foyer de 57 ans). Le petit pleure et te suit, toute sa famille te cherche.",
+      "on_enter": {
+        "score": -19,
+        "set_flags": { "famille_gamin_te_cherche": true, "grand_frere_cherche": true, "gamin_avec_toi": true }
+      },
+      "dev_note": "On suppose que le gamin te suit en pleurant (gamin_avec_toi = true). À ajuster.",
+      "next": "checkpoint_jardin"
+    },
+
+    "malala_appel": {
+      "type": "scene",
+      "speaker": "Malala",
+      "text": "Tu rappelles Malala pour la convaincre de venir. Elle te dit que tu commences à la faire chier et que t'es relou. Ça te gonfle.",
+      "on_enter": { "score": -5 },
+      "choices": [
+        { "id": "ma_laisser", "label": "Tu passes à autre chose. nsm Malala, y'a que Boro pour me comprendre.", "next": "malala_laisser" },
+        { "id": "ma_chez_elle", "label": "Tu vas devant chez elle pour voir si elle va bien. Ça te paraît bizarre qu'elle réagisse comme ça.", "next": "chez_malala" }
+      ]
+    },
+
+    "malala_laisser": {
+      "type": "scene",
+      "text": "Tu traces vers le jardin retrouver Boro.",
+      "next": "checkpoint_jardin"
+    },
+
+    "chez_malala": {
+      "type": "scene",
+      "text": "Une fois devant chez elle, tu hésites...",
+      "choices": [
+        { "id": "cm_fenetre", "label": "Tu escalades le muret de sa résidence, et vas voir discrètement à sa fenêtre.", "next": "malala_fenetre" },
+        { "id": "cm_porte", "label": "Tu vas sonner à sa porte.", "next": "malala_porte" }
+      ]
+    },
+
+    "malala_fenetre": {
+      "type": "branch",
+      "text": "Tu escalades le muret de sa résidence et te glisses jusqu'à sa fenêtre.",
+      "branches": [
+        { "condition": { "flag": "avis_de_recherche" }, "next": "malala_fenetre_flics" }
+      ],
+      "default": "malala_fenetre_vu"
+    },
+
+    "malala_fenetre_flics": {
+      "type": "game_over",
+      "title": "Perdu",
+      "text": "Les flics qui passent par là te reconnaissent, en train d'espionner quelqu'un à la fenêtre. Pris en flag, tu tombes dans le pot de fleurs.",
+      "scope": "chapter",
+      "dev_note": "Perdu (partie ou chapitre ?) : à décider."
+    },
+
+    "malala_fenetre_vu": {
+      "type": "scene",
+      "text": "Tu aperçois Malala en train de chill avec une fille que tu ne connais pas.",
+      "choices": [
+        { "id": "mfv_boro", "label": "Tu gardes ça en mémoire et tu vas rejoindre Boro.", "next": "malala_fenetre_boro" },
+        { "id": "mfv_confronter", "label": "Tu frappes à sa porte pour la confronter : « Pk tu me ghostes alors que tu chill avec quelqu'un ? Tu me présentes pas ? »", "next": "malala_confrontation" }
+      ]
+    },
+
+    "malala_fenetre_boro": {
+      "type": "scene",
+      "text": "Tu décides de rejoindre Boro, qui t'attend. T'es en retard. Tu l'as pas prévenu. C'est pas cool.",
+      "on_enter": { "score": -6, "set_flags": { "boro_en_retard": true } },
+      "next": "checkpoint_jardin"
+    },
+
+    "malala_confrontation": {
+      "type": "scene",
+      "speaker": "Malala",
+      "text": "Malala s'énerve (à raison), et t'explique que t'es un gros malade et qu'elle traînera définitivement plus avec toi et Boro, et encore moins quelconque relation.",
+      "on_enter": { "set_flags": { "malala_rupture": true } },
+      "choices": [
+        { "id": "mc_insulte", "label": "« Pfff, les femmes, toutes les mêmes ! Ntm toi et tes changements d'humeur sans raison ! T'as juste tes règles ! »", "next": "malala_gifle" },
+        { "id": "mc_adieux", "label": "« Ok ok c'est bon j'ai compris, je me casse. Jsp pas pourquoi t'es si méchante avec moi, je t'ai toujours bien traitée, en tout cas t'auras toujours ta place avec moi et Boro. »", "next": "malala_adieux" }
+      ]
+    },
+
+    "malala_gifle": {
+      "type": "scene",
+      "text": "Elle t'envoie une méga gifle, sa pote est choquée, mais te crache dessus quand même. Elle te claque la porte au nez, et tu décides de rejoindre Boro qui t'attend.",
+      "on_enter": { "score": -10 },
+      "next": "checkpoint_jardin"
+    },
+
+    "malala_adieux": {
+      "type": "scene",
+      "text": "Tu pars la tête basse, et tu vas rejoindre Boro.",
+      "on_enter": { "score": -7 },
+      "next": "checkpoint_jardin"
+    },
+
+    "malala_porte": {
+      "type": "scene",
+      "speaker": "Malala",
+      "text": "Malala t'ouvre. Elle soupire. « Ça va ? Je... je m'inquiétais, et je... »",
+      "choices": [
+        { "id": "mp_excuses", "label": "« ...je voulais m'excuser pour l'autre soir, j'suis trop con. »", "next": "malala_excuses" },
+        { "id": "mp_pourquoi", "label": "« ...je voulais savoir pourquoi tu me fais la gueule. »", "next": "malala_pourquoi" }
+      ]
+    },
+
+    "malala_excuses": {
+      "type": "scene",
+      "speaker": "Malala",
+      "text": "« En fait, moi aussi, j'ai été un peu dure hier... Ok, mais avoue que t'es un peu chelou en ce moment. Bon c'est pas grave, on se voit plus tard, là j'peux pas. »",
+      "on_enter": { "score": 3, "set_flags": { "malala_reconciliee": true } },
+      "next": "checkpoint_jardin"
+    },
+
+    "malala_pourquoi": {
+      "type": "branch",
+      "dev_note": "Le schéma montre 2 réponses possibles sans condition. Choix arbitraire : si tu t'es déclaré à Malala (ch.1) → elle explique qu'elle est lesbienne ; sinon → elle te dit que t'es parano. À ajuster.",
+      "branches": [
+        { "condition": { "flag": "declaration_amour" }, "next": "malala_lesbienne" }
+      ],
+      "default": "malala_parano"
+    },
+
+    "malala_lesbienne": {
+      "type": "scene",
+      "text": "Elle t'explique que si elle te calcule pas, c'est parce qu'elle est lesbienne. Du coup t'es rassuré, et tu vas rejoindre Boro, sans elle parce qu'elle est quand même occupée cet aprèm.",
+      "on_enter": { "set_flags": { "malala_lesbienne": true } },
+      "next": "checkpoint_jardin"
+    },
+
+    "malala_parano": {
+      "type": "scene",
+      "speaker": "Malala",
+      "text": "« Mais déjà qu'est-ce que tu fais là, et en plus je te fais pas la gueule, t'es juste parano... T'as un vrai problème, dégage ! » Tu vas rejoindre Boro, un peu remonté contre Malala.",
+      "on_enter": { "score": -8 },
+      "next": "checkpoint_jardin"
+    },
+
+    "checkpoint_jardin": {
+      "type": "checkpoint",
+      "text": "Tu arrives au jardin et tu rejoins Boro.",
+      "next": "boro_dialogue"
+    },
+
+    "boro_dialogue": {
+      "type": "scene",
+      "dialogue": [
+        { "speaker": "Boro", "text": "Ouais gros c'est chaud, on est là, on fait rien. J'ai pas d'ambition, mais des fois je vois des gens mourir, des gens partir, et je me dis que je veux pas partir sans laisser ma trace, laisser un impact positif." },
+        { "speaker": "Slug", "text": "Hier, il s'est passé pas mal de trucs, et c'est décidé : c'est fini de procrastiner. Viens, on fait bouger les choses. Même si c'est que aujourd'hui, au moins on aura tenté un truc. Au pire on se casse la gueule, ça fera rire les collègues." },
+        { "speaker": "Boro", "text": "Franchement ouais, mais je pense sincèrement qu'on est un peu trop cons pour faire un gros truc. Faut qu'on commence petit. Ou alors que Malala décide de venir, jsp pk elle vient pas aujourd'hui..." },
+        { "speaker": "Slug", "text": "nsm Malala. Non, on vise gros, faut choquer bro." },
+        { "speaker": "Boro", "text": "Vas-y tu m'as chauffé, j'espère t'as une idée de fou. Et dépêche-toi de la sortir parce que ma motivation va pas rester longtemps mdr." },
+        { "speaker": "Slug", "text": "Ouais mon pote, on va..." }
+      ],
+      "dev_note": "Choix de l'objectif : soit par le joueur (actuel), soit défini selon le score. Pour le mode score, remplacer 'choices' par un noeud 'branch' avec { score_gte }.",
+      "choices": [
+        { "id": "obj_loubards", "label": "...rendre les rues + sûres en secouant les loubards. C'est abusé que les meufs puissent pas sortir le soir sans se faire agresser, juste à cause d'un gang de cassos. Viens, on va les choquer un peu. On va commencer à petite échelle : rendre ce jardin sûr. Les loubards vendent de la drogue en plein jour à côté des gosses, c'est inadmissible.", "next": "objectif_loubards" },
+        { "id": "obj_baveux", "label": "...faire tomber les baveux. Tu trouves pas que c'est abusé ? Genre c'est ptn de mafieux qui contrôlent tout, nous on est leur pute et on va rien dire ?", "next": "objectif_baveux" }
+      ]
+    },
+
+    "objectif_loubards": {
+      "type": "scene",
+      "dialogue": [
+        { "speaker": "Boro", "text": "Tu m'as chauffé, mais je le sens pas trop à 2. Tu veux pas qu'on aille chercher du renfort un peu ?" }
+      ],
+      "on_enter": { "set_flags": { "objectif_loubards": true } },
+      "choices": [
+        { "id": "ol_inconnu", "label": "« Je connais un mec parfait pour ça... » Tu appelles l'inconnu du bar.", "next": "renfort_inconnu", "condition": { "all": [ { "ref": "bon_terme_inconnu" }, { "flag": "justicier_avec_toi", "equals": false } ] } },
+        { "id": "ol_sdf", "label": "« Ok, je connais un mec parfait. » Tu pars chercher le SDF de l'autre soir.", "next": "renfort_sdf", "condition": { "ref": "bon_terme_sdf" } },
+        { "id": "ol_seuls", "label": "« Tkt bro, t'as pas confiance en nous ? On y va en bonhomme, on a besoin de personne. »", "next": "vers_quartier_bleu" }
+      ]
+    },
+
+    "renfort_inconnu": {
+      "type": "scene",
+      "text": "L'inconnu du bar décroche à la première sonnerie : « J'arrive. » Il vous rejoint, tout sourire, avec une batte qu'il appelle Gertrude.",
+      "on_enter": { "set_flags": { "renfort_inconnu": true } },
+      "dev_note": "Suite non écrite dans le schéma : l'effet du renfort sur la suite est à définir. Texte de liaison ajouté.",
+      "next": "vers_quartier_bleu"
+    },
+
+    "renfort_sdf": {
+      "type": "scene",
+      "text": "Tu pars chercher le SDF de l'autre soir. Il accepte de vous suivre en échange d'une glace.",
+      "on_enter": { "set_flags": { "renfort_sdf": true } },
+      "dev_note": "Suite non écrite dans le schéma : l'effet du renfort sur la suite est à définir. Texte de liaison ajouté.",
+      "next": "vers_quartier_bleu"
+    },
+
+    "vers_quartier_bleu": {
+      "type": "branch",
+      "text": "Vous avancez vers le sud du jardin, direction le quartier bleu. Vous passez devant un banc, avec assis dessus 3 grands mecs et un enfant...",
+      "branches": [
+        { "condition": { "ref": "un_grand_frere_te_cherche" }, "next": "banc_grands_freres" }
+      ],
+      "default": "banc_demande"
+    },
+
+    "banc_grands_freres": {
+      "type": "scene",
+      "speaker": "Grand frère",
+      "text": "« Eh viens ici toi ! Viens viens tkt. C'est toi qui as emmerdé mon p'tit frère ? Non non me dis pas non, je sais que c'est toi, il vient de me le dire. »",
+      "choices": [
+        { "id": "bgf_excuses", "label": "Tu t'excuses et expliques que t'as changé, et que t'as plus important à faire. Il te demande une compensation, tu acceptes.", "next": "banc_compensation" },
+        { "id": "bgf_2v3", "label": "C'est fini de se laisser marcher dessus. Tu réponds, et proposes un 2v3 dans un coin tranquille.", "next": "banc_bagarre" },
+        { "id": "bgf_respect", "label": "T'expliques à Boro que pour changer le monde, faut commencer par se faire respecter. Vous vous éloignez, la bagarre éclate.", "next": "banc_bagarre" }
+      ]
+    },
+
+    "banc_compensation": {
+      "type": "branch",
+      "branches": [
+        { "condition": { "flag": "portefeuille_perdu" }, "next": "banc_sans_portefeuille" }
+      ],
+      "default": "banc_paix"
+    },
+
+    "banc_sans_portefeuille": {
+      "type": "scene",
+      "text": "Tu te rends compte que tu n'as plus de quoi payer. L'un d'eux te crache au visage en te traitant de clochard.",
+      "on_enter": { "score": -11 },
+      "next": "jardin_ronde"
+    },
+
+    "banc_paix": {
+      "type": "scene",
+      "text": "Tu leur donnes un billet chacun, t'excuses encore, et fais la paix avec eux. Tu ne cherches pas à t'embrouiller avec n'importe qui, surtout ceux qui ne l'ont pas mérité. Ils t'invitent même à venir avec eux en VIP à la xboîte, une boîte de nuit du centre-ville. Tu gagnes le pass xboite.",
+      "on_enter": { "score": 10, "add_items": [ "pass_xboite" ] },
+      "next": "jardin_ronde"
+    },
+
+    "banc_bagarre": {
+      "type": "scene",
+      "text": "Vous êtes trop forts à 2, vous leur laissez aucune chance. Leur petit frère part en courant chercher du renfort. Maintenant, toute la famille vous recherche. Vous retournez à vos occupations.",
+      "on_enter": { "score": 7, "set_flags": { "famille_gamin_te_cherche": true } },
+      "next": "jardin_ronde"
+    },
+
+    "banc_demande": {
+      "type": "branch",
+      "dialogue": [
+        { "speaker": "Grand frère", "text": "Eh toi ! Dis-moi, tu saurais pas où j'peux trouver un [truc que tu connais après un autre chapitre] ?" }
+      ],
+      "dev_note": "Le 'truc' sera défini dans un autre chapitre : flag sait_route_truc à activer là-bas.",
+      "branches": [
+        { "condition": { "flag": "sait_route_truc" }, "next": "banc_sait" }
+      ],
+      "default": "banc_sait_pas"
+    },
+
+    "banc_sait": {
+      "type": "scene",
+      "text": "« Ouais c'est là-bas. » Il te remercie d'un hochement de tête. Vous continuez votre chemin.",
+      "on_enter": { "score": 4 },
+      "next": "jardin_ronde"
+    },
+
+    "banc_sait_pas": {
+      "type": "scene",
+      "text": "Tu ne sais pas du tout de quoi il parle.",
+      "choices": [
+        { "id": "bsp_honnete", "label": "« J'en sais rien frérot dsl ? Bon courage, bonne journée. »", "next": "banc_honnete" },
+        { "id": "bsp_bluff", "label": "« Ouais c'est là-bas. »", "next": "banc_bluff" }
+      ]
+    },
+
+    "banc_honnete": {
+      "type": "scene",
+      "text": "Il hausse les épaules. Vous continuez votre chemin.",
+      "next": "jardin_ronde"
+    },
+
+    "banc_bluff": {
+      "type": "scene",
+      "speaker": "Grand frère",
+      "text": "« Mais t'en sais rien en fait ? Tu te fous de ma gueule ? Ça t'amuse ? » Vous continuez votre chemin avant qu'il se lève.",
+      "on_enter": { "score": -8, "set_flags": { "bluff_banc": true } },
+      "next": "jardin_ronde"
+    },
+
+    "jardin_ronde": {
+      "type": "scene",
+      "text": "Après avoir marché 2 min dans le jardin sans trouver de problèmes liés aux loubards, Boro te demande s'il est préférable de surveiller le jardin, ou bien de dégager tous les loubards sans distinction.",
+      "choices": [
+        { "id": "jr_surveillance", "label": "Mission de surveillance", "next": "mission_surveillance" },
+        { "id": "jr_nettoyage", "label": "Mission de nettoyage", "next": "mission_nettoyage" }
+      ]
+    },
+
+    "mission_surveillance": {
+      "type": "scene",
+      "text": "Vous partez donc en mission de surveillance. Vous décidez de faire des tours du jardin, boire des cafés, manger des glaces, tout en gardant l'œil ouvert. Vers la sortie du jardin, vous repérez 5 loubards. Vous observez discrètement, et remarquez un comportement louche. L'impression qu'ils protègent la poubelle à côté d'eux, jusqu'à ce que l'un d'eux sorte quelque chose de la poubelle et le donne à un autre loubard qui les a rejoints.",
+      "choices": [
+        { "id": "ms_filature", "label": "Tu décides de les prendre en filature et de les attaquer quand le moment sera opportun.", "next": "filature" },
+        { "id": "ms_sauter", "label": "Tu décides de leur sauter dessus. Ces loubards sont déjà sous substances, donc leur supériorité numérique ne fera pas grande différence en combat.", "next": "rixe" }
+      ]
+    },
+
+    "mission_nettoyage": {
+      "type": "scene",
+      "text": "Vous partez donc en mission de « nettoyage ». Vous décidez de faire des tours du jardin, dans un seul but : trouver des loubards. Au bout de 5/10 min de recherche, vous tombez sur 5 loubards, près de la sortie du jardin, sur un banc proche d'une poubelle. L'un d'eux vient de récupérer quelque chose dedans. Ils sont sans doute en train de vendre la mort, hors de question de laisser passer ça.",
+      "on_enter": { "score": -10 },
+      "next": "rixe"
+    },
+
+    "rixe": {
+      "type": "branch",
+      "text": "Une grosse rixe éclate ; les passants crient, les loubards se défendent. Ta super bave te permet d'esquiver les coups les plus dangereux, mais tu en encaisses quand même pas mal. Boro domine ses adversaires grâce à sa peau métallique, mais commence à faiblir sur la fin. Alors que tu penses gagner, tu entends un bruit derrière toi qui t'oblige à t'arrêter net :",
+      "branches": [
+        { "condition": { "flag": "gamin_avec_toi" }, "next": "rixe_gamin" },
+        { "condition": { "flag": "avis_de_recherche" }, "next": "rixe_police_ferme" }
+      ],
+      "default": "rixe_police_gav",
+      "dev_note": "Cas flics_payes (antécédents sans avis de recherche) non couvert par le schéma : tombe dans la branche GAV."
+    },
+
+    "rixe_gamin": {
+      "type": "scene",
+      "dialogue": [
+        { "speaker": "Loubard", "text": "Lâche mon pote maintenant ou je zigouille le gamin !" }
+      ],
+      "text": "Dans le feu de l'action, t'as oublié que le gamin était avec vous.",
+      "choices": [
+        { "id": "rg_stop", "label": "« Boro, stop... » Tu te rends.", "next": "loubard_recule" },
+        { "id": "rg_tuer", "label": "« J'm'en bats les c, le gosse je le connais pas. » Tu termines le loubard sous ton genou.", "next": "loubard_tue_gosse" }
+      ]
+    },
+
+    "loubard_recule": {
+      "type": "scene",
+      "text": "Le loubard recule doucement, pendant que les autres se relèvent et vous humilient (ils vous crachent dessus, et vous insultent). Ils s'enfuient, en gardant le gamin.",
+      "on_enter": { "score": -1, "set_flags": { "gamin_enleve": true, "gamin_avec_toi": false } },
+      "next": "checkpoint_recherche"
+    },
+
+    "loubard_tue_gosse": {
+      "type": "scene",
+      "text": "Le loubard achève le gosse d'un coup de couteau dans la gorge, et s'enfuit. Aveuglé par la rage, tu le perds de vue.",
+      "on_enter": { "score": -31, "set_flags": { "gamin_mort": true, "gamin_avec_toi": false } },
+      "next": "checkpoint_recherche"
+    },
+
+    "rixe_police_ferme": {
+      "type": "game_over",
+      "title": "Perdu",
+      "text": "« Police ! Les mains en l'air ! » Aucune issue, vous n'avez pas d'autre choix que de vous rendre... Avec vos antécédents, c'est du ferme.",
+      "scope": "chapter",
+      "dev_note": "Perdu (partie ou chapitre ?) : à décider."
+    },
+
+    "rixe_police_gav": {
+      "type": "chapter_end",
+      "text": "« Police ! Les mains en l'air ! » Aucune issue, vous n'avez pas d'autre choix que de vous rendre... Vous passez la nuit en GAV.",
+      "return_to": "map"
+    },
+
+    "checkpoint_recherche": {
+      "type": "checkpoint",
+      "text": "La seule chose qui compte maintenant, c'est de retrouver ce loubard. C'est ma responsabilité. Tu pars avec Boro retrouver les loubards.",
+      "next": "filature"
+    },
+
+    "filature": {
+      "type": "branch",
+      "text": "Vous les suivez donc discrètement. Mais sur le chemin...",
+      "branches": [
+        { "condition": { "ref": "mauvais_terme_sdf" }, "next": "sdf_embuscade" }
+      ],
+      "default": "hangar_repere"
+    },
+
+    "sdf_embuscade": {
+      "type": "scene",
+      "text": "En passant dans une ruelle, tu t'éclates le front par terre. « Allez, mange le béton, bouffon ! » C'était le SDF de l'autre soir... En te relevant, tu regardes au loin : tu les as perdus... Tu continues quand même. Ton but n'a pas changé.",
+      "on_enter": { "score": -16 },
+      "next": "indices"
+    },
+
+    "hangar_repere": {
+      "type": "scene",
+      "text": "Tu finis par les voir entrer dans un hangar. Tu notes l'adresse, et fais demi-tour pour ne pas éveiller les soupçons. Comme tu sais où aller, tu élabores un plan avec Boro, et vous attendez que la nuit tombe pour passer à l'action.",
+      "on_enter": { "set_flags": { "hangar_connu": true } },
+      "next": "hangar_devant"
+    },
+
+    "indices": {
+      "type": "scene",
+      "text": "Tu retournes sur la scène de crime, pour chercher des indices. Tu prends des notes sur ce que tu vois et entends, puis vous continuez votre ronde pour avoir une vision plus globale. Après une bonne heure, tu dis à Boro : « Bon on a bien bossé. J'ai fait une liste de tous les loubards qu'on a croisés ici, leur description et leur nom si je les ai entendus. »",
+      "on_enter": { "score": 2 },
+      "choices": [
+        { "id": "in_chill", "label": "« ...Go chill maintenant, viens on va se poser au bar de la Marine. »", "next": "fin_chill" },
+        { "id": "in_source", "label": "« Viens on va plus loin. On va voir à la source, où ils dorment, où ils mangent. »", "next": "vers_source" }
+      ]
+    },
+
+    "fin_chill": {
+      "type": "chapter_end",
+      "text": "Vous allez vous poser au bar de la Marine. La liste attendra.",
+      "on_enter": { "score": -2 },
+      "return_to": "map"
+    },
+
+    "vers_source": {
+      "type": "scene",
+      "text": "Vous remontez la piste jusqu'à la source. Après quelques heures de marche, vous repérez enfin le hangar.",
+      "on_enter": { "score": 5, "set_flags": { "hangar_connu": true } },
+      "next": "hangar_devant"
+    },
+
+    "hangar_devant": {
+      "type": "scene",
+      "text": "Arrivés devant le hangar, tu décides de :",
+      "dev_note": "Annotation incomplète dans le schéma : 'Route pour trouver......'.",
+      "choices": [
+        { "id": "hd_force", "label": "Toquer, puis rentrer en force.", "next": "hangar_force" },
+        { "id": "hd_livreur", "label": "Toquer, et passer pour le livreur.", "next": "hangar_livreur" },
+        { "id": "hd_derriere", "label": "Passer par la porte de derrière.", "next": "hangar_force", "disabled": true, "disabled_reason": "Ya pas de porte par derrière, la vie c'est pas un film." }
+      ]
+    },
+
+    "hangar_force": {
+      "type": "scene",
+      "text": "Un mec aux yeux rouges t'ouvre. Tu lui sautes dessus, et le mets KO avec un double coup sur les 2 oreilles. 4 loubards postés à côté se lèvent pour intervenir, et le combat commence. Beaucoup de coups, plus donnés qu'encaissés, les loubards de dehors titubent, et la porte est ouverte.",
+      "on_enter": { "score": 4 },
+      "choices": [
+        { "id": "hf_finir", "label": "Tu décides de finir les loubards de dehors.", "next": "hangar_dehors_fin" },
+        { "id": "hf_entrer", "label": "Tu décides d'y rentrer, Boro derrière toi.", "next": "hangar_interieur" }
+      ]
+    },
+
+    "hangar_dehors_fin": {
+      "type": "chapter_end",
+      "text": "Tu finis les loubards de dehors. Ça prend un moment. Quand tu relèves la tête, la porte du hangar est fermée à clé.",
+      "on_enter": { "score": -7 },
+      "return_to": "map"
+    },
+
+    "hangar_livreur": {
+      "type": "scene",
+      "text": "Le mec toque à la porte, un loubard sort sa tête. Le premier lui dit que les pizzas sont prêtes. Le 2e crie une insulte amicale à d'autres à l'intérieur, prend la « pizza » et referme la porte. Tu retoques.",
+      "on_enter": { "score": 6 },
+      "dev_note": "Les deux textes 'livreur' du schéma sont enchaînés ici : à vérifier.",
+      "next": "hangar_livreur_entree"
+    },
+
+    "hangar_livreur_entree": {
+      "type": "scene",
+      "text": "Un mec aux yeux rouges t'ouvre. Il te dévisage sans parler pendant 10 secondes, puis te laisse entrer.",
+      "next": "hangar_interieur"
+    },
+
+    "hangar_interieur": {
+      "type": "scene",
+      "text": "À l'intérieur, une pièce au plafond bas, des posters obscènes aux murs, des canettes par terre, et au fond à droite une porte fermée. Tu y vas, Boro derrière toi.",
+      "next": "hangar_hall"
+    },
+
+    "hangar_hall": {
+      "type": "scene",
+      "text": "Devant toi, un espèce de grand hall rempli de vieilles machines industrielles, avec au milieu un canapé, une télé et 5 loubards dessus. Vous vous regardez dans un étrange moment un peu gênant, et ils décident de négocier : « Eh eh tranquille, pas besoin de s'affoler. C'est quoi le problème ? »",
+      "choices": [
+        { "id": "hh_vengeance", "label": "La vengeance ne se négocie pas. Vous massacrez tout le monde.", "next": "hall_massacre_vengeance", "condition": { "flag": "gamin_mort" } },
+        { "id": "hh_gosse", "label": "Où est le gosse ?", "next": "hall_gosse", "condition": { "flag": "gamin_enleve" } },
+        { "id": "hh_ecouter", "label": "Les écouter.", "next": "hall_negociation" }
+      ]
+    },
+
+    "hall_massacre_vengeance": {
+      "type": "scene",
+      "text": "La vengeance ne se négocie pas. Vous massacrez tout le monde.",
+      "next": "boss_etage"
+    },
+
+    "hall_gosse": {
+      "type": "scene",
+      "dialogue": [
+        { "speaker": "Slug", "text": "Où est le gosse ?" },
+        { "speaker": "Loubard", "text": "De quoi il parle lui ? Eh y'a pas de gosse ici t'es con ou quoi ? Ça ressemble à un parc aquatique ?" }
+      ],
+      "text": "Ils mentent sans aucun doute.",
+      "choices": [
+        { "id": "hg_massacre", "label": "Vous les massacrez tous, sauf 1, pour lui soutirer des infos.", "next": "hall_massacre_interro" },
+        { "id": "hg_amical", "label": "Tu décides d'être amical afin de leur soutirer des informations : « Ok les gars dsl, c'est juste que je dois retrouver un gamin qui s'est enfui, et on l'a aperçu traîner par ici, avec un loubard. Mais s'il est pas là, c'est pas grave. Sinon, ça dit quoi la team ? »", "next": "hall_amical" }
+      ]
+    },
+
+    "hall_massacre_interro": {
+      "type": "scene",
+      "dialogue": [
+        { "speaker": "Loubard", "text": "Y'a pas de gosses ici espèce de malade mental, tu crois j'vais risquer ma vie pour la cause ? Ntm de là." }
+      ],
+      "text": "Tu le finis d'une méga gifle baveuse.",
+      "on_enter": { "score": -13 },
+      "next": "boss_etage"
+    },
+
+    "hall_amical": {
+      "type": "scene",
+      "text": "Toi et Boro finissez sur le canapé au milieu des loubards, à raconter comment vous en êtes arrivés là, et en essayant d'en savoir plus. Après plusieurs heures, de la malbouffe et de l'alcool ingérés, vous avez oublié votre but, et tu te rends compte que tu t'amuses beaucoup ici.",
+      "on_enter": { "score": 5 },
+      "next": "fin_rejoint_loubards"
+    },
+
+    "fin_rejoint_loubards": {
+      "type": "ending",
+      "title": "Fin d'histoire",
+      "text": "Tu finis par les rejoindre, et traîner tous les jours avec eux.",
+      "on_enter": { "score": -21 }
+    },
+
+    "hall_negociation": {
+      "type": "scene",
+      "dialogue": [
+        { "speaker": "Loubard", "text": "Bah on en a marre de vous en gros, la délinquance tout ça, et ouais faut arrêter." },
+        { "speaker": "Loubard", "text": "Donc ce qu'on va faire, c'est que soit vous dégagez et vous trouvez un taff comme tout le monde, soit on appelle la police." },
+        { "speaker": "Loubard", "text": "Donc on va vous renvoyer dans votre pays et vous nous casserez plus les couilles." },
+        { "speaker": "Loubard", "text": "Mais t'as un taff toi-même ?" },
+        { "speaker": "Slug", "text": "..." }
+      ],
+      "choices": [
+        { "id": "hn_insulter", "label": "« Allez nique ta mère, Spiderman. »", "next": "hall_bagarre_sanglante" },
+        { "id": "hn_partir", "label": "Déconcerté par cette répartie, tu te rends compte que tu n'es rien de plus qu'un chômeur délinquant, tout comme eux. « Viens, on se casse. »", "next": "hall_abandon" }
+      ]
+    },
+
+    "hall_abandon": {
+      "type": "chapter_end",
+      "text": "Vous rentrez dépités, sans un mot sur le chemin du retour.",
+      "on_enter": { "score": -14 },
+      "return_to": "map"
+    },
+
+    "hall_bagarre_sanglante": {
+      "type": "scene",
+      "dialogue": [
+        { "speaker": "Loubard", "text": "Tu crois parce que t'es plein de bave t'as le droit d'être raciste ?" }
+      ],
+      "text": "Ils vous sautent dessus, armés jusqu'aux dents. Après une bagarre ultra sanglante, Boro perd un bras (sanglant n'est pas le mot adapté pour Boro, certes). Vous sortez gagnants, difficilement.",
+      "on_enter": { "score": 11, "set_flags": { "boro_bras_perdu": true } },
+      "next": "boss_etage"
+    },
+
+    "boss_etage": {
+      "type": "branch",
+      "text": "Vous prenez les escaliers qui montent à l'étage. En haut, dans une espèce de bureau sale, un loubard à crête rouge recompte des liasses de billets. « ??? Qu'est-ce que vous faites là, vous ? »",
+      "branches": [
+        { "condition": { "flag": "gamin_mort" }, "next": "boss_vengeance" },
+        { "condition": { "flag": "gamin_enleve" }, "next": "boss_gosse" }
+      ],
+      "default": "boss_arrestation"
+    },
+
+    "boss_vengeance": {
+      "type": "scene",
+      "dialogue": [
+        { "speaker": "Slug", "text": "On vient te niquer ta mère. T'es un tueur d'enfant, aucune peine. Tu vas payer." }
+      ],
+      "text": "Seul contre vous, même affaibli, il n'a aucune chance. Vous le massacrez sans relâche. En moins de 10 minutes, le loubard gît par terre dans une mare de sang. Le gamin est vengé. Pourtant, rien ne semble avoir changé en toi. À part une empathie qui s'estompe petit à petit...",
+      "on_enter": { "score": -21, "set_flags": { "empathie_perdue": true } },
+      "next": "fin_rentre_chez_toi"
+    },
+
+    "fin_rentre_chez_toi": {
+      "type": "chapter_end",
+      "text": "Tu rentres chez toi.",
+      "return_to": "map"
+    },
+
+    "boss_gosse": {
+      "type": "scene",
+      "dialogue": [
+        { "speaker": "Slug", "text": "Il est où le gosse, gros lard ?" },
+        { "speaker": "Loubard", "text": "Qui ça ?" },
+        { "speaker": "Slug", "text": "Le gosse que t'as attrapé hier pour te barrer lâchement alors qu'on était en train de t'enculer. Il est où ?" },
+        { "speaker": "Loubard", "text": "Aahhhhh lui ! Bah je l'ai porté sur 30 m et je l'ai laissé partir, qu'est-ce que tu veux que je fasse d'un gamin, on est pas sur l'île d'Epstein ici." }
+      ],
+      "text": "L'air bête, tu regardes autour de toi.",
+      "choices": [
+        { "id": "bg_tabasser", "label": "Rempli de honte, tu décides de le tabasser. Et puis tant qu'on y est, tu choppes quelques objets de valeur en partant, genre une grosse liasse, une montre et une carte magnétique.", "next": "boss_tabasse_vol" },
+        { "id": "bg_desole", "label": "« Ah merde. Bah du coup dsl, j'vais rentrer moi. »", "next": "boss_desole" }
+      ]
+    },
+
+    "boss_tabasse_vol": {
+      "type": "scene",
+      "text": "Tu le tabasses, puis tu repars avec une grosse liasse, une montre et une carte magnétique.",
+      "on_enter": {
+        "score": -26,
+        "set_flags": { "a_vole_loubard": true },
+        "add_items": [ "liasse_loubard", "montre_loubard", "carte_magnetique" ]
+      },
+      "next": "fin_rentre_chez_toi"
+    },
+
+    "boss_desole": {
+      "type": "scene",
+      "text": "Le loubard te gifle. Tu lui rends. Vous partez.",
+      "on_enter": { "score": -4 },
+      "next": "fin_rentre_chez_toi"
+    },
+
+    "boss_arrestation": {
+      "type": "scene",
+      "dialogue": [
+        { "speaker": "Slug", "text": "C'est fini gros lardon, rends-toi. Tu vas aller en prison." },
+        { "speaker": "Loubard", "text": "? Non mais je rêve, tu viens de prendre d'assaut mon domicile, agresser mes amis, tout casser chez moi, et c'est moi qui suis censé aller en prison ? J'ai rien fait moi là." }
+      ],
+      "text": "Un peu décontenancé, tu décides d'attendre la police. Le temps qu'ils arrivent, toi et le loubard vous insultez mutuellement. Lorsque la police arrive, ils ordonnent à tous de se mettre au sol, et embarquent tout le monde sans exception.",
+      "on_enter": { "score": 13 },
+      "next": "proces"
+    },
+
+    "proces": {
+      "type": "branch",
+      "branches": [
+        { "condition": { "flag": "gamin_avec_toi" }, "next": "fin_ferme_kidnapping" }
+      ],
+      "default": "fin_tig"
+    },
+
+    "fin_ferme_kidnapping": {
+      "type": "ending",
+      "title": "Fin d'histoire",
+      "text": "En plus des charges d'agression, la mère porte plainte contre vous pour kidnapping. Vous prenez du ferme."
+    },
+
+    "fin_tig": {
+      "type": "chapter_end",
+      "text": "Vous êtes accusés d'agression, de tentative de meurtre et d'intrusion. Comme vous plaidez la légitime défense et que la justice est un peu raciste, les loubards prennent plus que vous et vous vous en sortez avec une grosse amende et des TIG.",
+      "return_to": "map"
+    },
+
+    "objectif_baveux": {
+      "type": "scene",
+      "generated": true,
+      "dialogue": [
+        { "speaker": "Boro", "text": "Vas-y, je suis chaud. Je sais où ils sont en plus, suis-moi !" }
+      ],
+      "text": "Vous partez au nord du parc, direction des tours triplées.",
+      "on_enter": { "set_flags": { "objectif_baveux": true } },
+      "next": "nord_tours"
+    },
+
+    "nord_tours": {
+      "type": "scene",
+      "generated": true,
+      "text": "Les tours triplées se dressent devant vous : trois barres de verre identiques, collées les unes aux autres, comme si le pognon avait eu peur de se sentir seul. Boro les montre du menton : « C'est celle du milieu. Dernier étage. Ils ont des yeux partout, alors on réfléchit avant de foncer. » Au pied de la tour : un hall vitré avec un vigile, un portail de service côté bennes, et une rampe PMR sur le côté.",
+      "choices": [
+        { "id": "nt_observer", "label": "Vous poser sur un banc d'en face et observer d'abord.", "next": "nord_observer", "condition": { "flag": "nord_gardes_reperes", "equals": false } },
+        { "id": "nt_hall", "label": "Entrer par le hall principal.", "next": "nord_hall" },
+        { "id": "nt_carte", "label": "Montrer la carte que les baveux t'ont donnée sur l'avenue.", "next": "nord_carte", "condition": { "flag": "baveux_ont_ta_carte" } },
+        { "id": "nt_vieille", "label": "Chercher la dame au sac : elle habite par ici.", "next": "nord_vieille", "condition": { "flag": "vieille_sauvee" } },
+        { "id": "nt_service", "label": "Suivre l'indication du SDF : l'entrée de service côté bennes.", "next": "nord_service", "condition": { "flag": "quete_baveux_debloquee" } },
+        { "id": "nt_pmr", "label": "Utiliser la carte handicapé à la rampe PMR.", "next": "nord_pmr", "condition": { "item": "carte_handicape" } }
+      ]
+    },
+
+    "nord_observer": {
+      "type": "scene",
+      "generated": true,
+      "text": "Vous vous posez sur un banc d'en face, avec des glaces, comme deux touristes. Au bout d'une demi-heure, tu as compris le rythme : les vigiles changent de poste toutes les heures, et pendant 2 minutes le hall est à peine surveillé.",
+      "on_enter": { "score": 2, "set_flags": { "nord_gardes_reperes": true } },
+      "next": "nord_tours"
+    },
+
+    "nord_hall": {
+      "type": "branch",
+      "generated": true,
+      "branches": [
+        { "condition": { "flag": "nord_gardes_reperes" }, "next": "nord_hall_releve" }
+      ],
+      "default": "nord_hall_vigile"
+    },
+
+    "nord_hall_releve": {
+      "type": "scene",
+      "generated": true,
+      "text": "Pile pendant la relève. Vous passez devant le comptoir en discutant de foot, personne ne lève les yeux. Boro marche comme s'il était propriétaire de l'immeuble.",
+      "on_enter": { "score": 4 },
+      "next": "nord_ascenseur"
+    },
+
+    "nord_hall_vigile": {
+      "type": "scene",
+      "generated": true,
+      "text": "Le vigile vous toise de haut en bas, puis de bas en haut. « Vous avez rendez-vous ? » Boro fait craquer ses jointures métalliques. Ça fait un bruit de clés qu'on jette dans un tiroir.",
+      "choices": [
+        { "id": "nhv_bluff", "label": "Bluffer : « Livraison pour le dernier étage. Des pizzas. »", "next": "nord_bluff" },
+        { "id": "nhv_force", "label": "Laisser Boro régler ça.", "next": "nord_force" },
+        { "id": "nhv_repli", "label": "Dire « on réfléchira mieux demain » et faire demi-tour.", "next": "nord_repli" }
+      ]
+    },
+
+    "nord_bluff": {
+      "type": "scene",
+      "generated": true,
+      "text": "Le vigile consulte son écran. « Pas de commande prévue. » Il attrape son talkie. Tu cours vers l'ascenseur, Boro sur les talons.",
+      "on_enter": { "score": -3, "set_flags": { "nord_alerte": true } },
+      "next": "nord_ascenseur"
+    },
+
+    "nord_force": {
+      "type": "scene",
+      "generated": true,
+      "text": "Boro attrape le vigile par le col et le range délicatement dans la plante verte. Une alarme se met à hurler dans tout le bâtiment. « Ça compte comme de la discrétion ? »",
+      "on_enter": { "score": -5, "set_flags": { "nord_alerte": true } },
+      "next": "nord_ascenseur"
+    },
+
+    "nord_repli": {
+      "type": "chapter_end",
+      "generated": true,
+      "text": "Boro soupire. Vous rentrez, un peu déçus, avec l'impression d'avoir raté quelque chose.",
+      "on_enter": { "score": -3 },
+      "return_to": "map"
+    },
+
+    "nord_carte": {
+      "type": "scene",
+      "generated": true,
+      "text": "Tu tends la carte que les baveux t'ont donnée sur l'avenue. Le vigile pâlit, appelle l'étage, raccroche, et se redresse : « Monsieur vous attend. Ascenseur du fond. » Boro te regarde, impressionné et un peu inquiet.",
+      "on_enter": { "score": 6, "set_flags": { "nord_invite": true } },
+      "next": "nord_ascenseur"
+    },
+
+    "nord_vieille": {
+      "type": "scene",
+      "generated": true,
+      "dev_note": "Résout la question 'donne un objet ?' du schéma pour la vieille dame : badge_concierge.",
+      "text": "La dame du sac habite au 3e de la tour de gauche, et fait le ménage dans la tour du milieu le soir. Elle te reconnaît tout de suite : « Mon héros ! » Elle te glisse un badge de concierge dans la main : « Prends l'ascenseur de service, personne ne regarde les gens qui nettoient. »",
+      "on_enter": { "score": 5, "set_flags": { "vieille_aide": true }, "add_items": [ "badge_concierge" ] },
+      "next": "nord_ascenseur"
+    },
+
+    "nord_service": {
+      "type": "scene",
+      "generated": true,
+      "text": "Le SDF t'avait prévenu : derrière les bennes, une porte grise, code 0000. « Les riches oublient toujours de changer le code, mon grand. » La porte s'ouvre sur un monte-charge qui sent la javel.",
+      "on_enter": { "score": 5 },
+      "next": "nord_ascenseur"
+    },
+
+    "nord_pmr": {
+      "type": "scene",
+      "generated": true,
+      "text": "À la rampe PMR, le vigile jette un œil à la carte que tu agites. « Passez, monsieur, l'ascenseur adapté est au fond à droite. » Boro se retient de rire. De héros à zéro... mais ça marche.",
+      "on_enter": { "score": 3 },
+      "next": "nord_ascenseur"
+    },
+
+    "nord_ascenseur": {
+      "type": "scene",
+      "generated": true,
+      "text": "Les portes se ferment. La musique d'ascenseur est un piano jazz. Les étages défilent, jusqu'au dernier : un couloir en marbre, des tableaux hors de prix, une double porte entrouverte. Derrière, des voix calmes.",
+      "next": "nord_bureau"
+    },
+
+    "nord_bureau": {
+      "type": "scene",
+      "generated": true,
+      "text": "Un bureau panoramique. Trois hommes en costume autour d'une table de marbre : les baveux. Au fond, un fauteuil qui tourne lentement. « Slug. Boro. Entrez, je vous en prie. »",
+      "text_variants": [
+        { "condition": { "flag": "nord_invite" }, "text": "Ils t'attendent, un verre à la main, comme si tu étais déjà un invité. « La carte a fait son travail, à ce que je vois. »" },
+        { "condition": { "flag": "nord_alerte" }, "text": "L'alarme s'est tue. Les baveux sont là, trois hommes en costume autour d'une table de marbre, imperturbables. « Vous êtes bruyants, pour des gens qui voulaient nous voir. »" },
+        { "condition": { "flag": "baveux_ennemis" }, "text": "Trois hommes en costume autour d'une table de marbre. Le fauteuil pivote. « Tiens. Celui qui nous a snobés sur l'avenue. »" }
+      ],
+      "choices": [
+        { "id": "nb_attaquer", "label": "Leur sauter dessus sans prévenir.", "next": "nord_attaque" },
+        { "id": "nb_discours", "label": "Leur dire ce que tu penses : « C'est abusé. Vous contrôlez tout, et nous on est vos putes et on dit rien ! »", "next": "nord_discours" },
+        { "id": "nb_documents", "label": "Faire diversion pendant que Boro les occupe, et photographier les dossiers sur la table.", "next": "nord_documents", "condition": { "flag": "nord_alerte", "equals": false } },
+        { "id": "nb_offre", "label": "Écouter leur offre.", "next": "nord_marche", "condition": { "flag": "nord_invite" } }
+      ]
+    },
+
+    "nord_attaque": {
+      "type": "game_over",
+      "generated": true,
+      "title": "Perdu",
+      "text": "Tu bondis sur la table. Le fauteuil pivote : derrière, trois colosses en costume, sortis d'une berline noire que tu reconnaîtrais entre mille. Vous ne touchez pas un cheveu de personne. Tu te réveilles sur le trottoir sans portefeuille, sans dignité, et sans Boro.",
+      "scope": "chapter"
+    },
+
+    "nord_discours": {
+      "type": "branch",
+      "generated": true,
+      "text": "Silence. Le fauteuil s'arrête de tourner.",
+      "dev_note": "Seuil de score (>= 0) arbitraire : à ajuster selon l'équilibrage.",
+      "branches": [
+        { "condition": { "score_gte": 0 }, "next": "nord_marche" }
+      ],
+      "default": "nord_expulse"
+    },
+
+    "nord_marche": {
+      "type": "scene",
+      "generated": true,
+      "dialogue": [
+        { "speaker": "Baveux", "text": "Un idéaliste. Ça faisait longtemps. On aime bien les idéalistes : ils finissent par devenir très compétents." },
+        { "speaker": "Baveux", "text": "Un poste, un salaire, une berline noire avec chauffeur. Et ton ami d'acier trouvera toujours de la ferraille à porter." },
+        { "speaker": "Boro", "text": "...Bro, j'ai pas dit non à la ferraille." }
+      ],
+      "choices": [
+        { "id": "nm_accepter", "label": "Serrer la main du fauteuil.", "next": "nord_corrompu" },
+        { "id": "nm_refuser", "label": "« On n'est pas à vendre. »", "next": "nord_refus" }
+      ]
+    },
+
+    "nord_expulse": {
+      "type": "chapter_end",
+      "generated": true,
+      "text": "Les baveux échangent un regard fatigué. « Un chien qui aboie. » Deux colosses vous raccompagnent jusqu'au trottoir, sans violence, mais sans douceur non plus.",
+      "on_enter": { "score": -5 },
+      "return_to": "map"
+    },
+
+    "nord_corrompu": {
+      "type": "chapter_end",
+      "generated": true,
+      "text": "Tu serres la main du fauteuil. Dans l'ascenseur, Boro fixe le sol. « Je croyais qu'on voulait les faire tomber. » Tu ne réponds pas. En bas, une berline t'attend.",
+      "on_enter": { "score": -10, "set_flags": { "allie_des_baveux": true, "boro_decu": true }, "add_items": [ "pass_baveux" ] },
+      "return_to": "map"
+    },
+
+    "nord_refus": {
+      "type": "chapter_end",
+      "generated": true,
+      "text": "« On n'est pas à vendre. » Les baveux sourient poliment. « Dommage. On se reverra. » Ils vous laissent partir, ce qui est plus inquiétant que s'ils vous avaient frappés. Boro te tape l'épaule en sortant : « Bro. Respect. »",
+      "on_enter": { "score": 10, "set_flags": { "baveux_ennemis": true } },
+      "return_to": "map"
+    },
+
+    "nord_documents": {
+      "type": "chapter_end",
+      "generated": true,
+      "text": "Pendant que les baveux parlent, Boro engage la conversation sur le prix de l'acier (il a des avis). Toi, tu photographies les dossiers sur la table, un par un, le cœur à 200. Quand vous repartez, personne ne s'est rendu compte de rien. Tu ressors avec de quoi les faire tomber.",
+      "on_enter": { "score": 8, "set_flags": { "preuves_baveux": true } },
+      "return_to": "map"
+    }
+  }
+}
