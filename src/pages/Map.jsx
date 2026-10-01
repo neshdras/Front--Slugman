@@ -3,6 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useGame } from '../context/GameContext.jsx';
 
+// Image de la carte : à placer dans /public (ou adapter le chemin).
+// Les positions des pastilles (c.pin.x / c.pin.y, en %) sont relatives à CETTE image.
+const MAP_IMAGE = '../../public/map.webp';
+
 function statusOf(ch, { progress, session, isUnlocked }) {
   if (progress?.story.completed.includes(ch.id)) return 'done';
   if (session?.chapterId === ch.id) return 'current';
@@ -53,21 +57,18 @@ const hasProgress = progress.story.completed.length > 0 || session
     navigate('/play');
   };
 
-  const route = chapters.map((c) => `${c.pin.x},${c.pin.y}`).join(' ');
   const allDone = chapters.every((c) => progress.story.completed.includes(c.id));
 
   return (
     <main className="mappage">
       <header className="topbar">
-        <h1 className="logo">Slug</h1>
+        <h1 className="logo">SlugMan</h1>
         <p className="topbar__who">{user.name_user ?? user.email_user}</p>
         <button className="btn btn--ghost" onClick={logout}>Déconnexion</button>
       </header>
 
       <section className="map" aria-label="Carte des chapitres">
-        <svg className="map__route" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-          <polyline points={route} vectorEffect="non-scaling-stroke" />
-        </svg>
+        <img className="map__img" src={MAP_IMAGE} alt="" draggable={false} />
         {chapters.map((c) => {
           const s = statusOf(c, game);
           return (

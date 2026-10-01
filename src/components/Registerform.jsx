@@ -20,6 +20,7 @@ function RegisterForm() {
 
         try {
             setLoading(true)
+            setError(null)
             await authService.register(name, email, password, controller.signal)
             navigate('/login')
         } catch (err) {
@@ -36,30 +37,38 @@ function RegisterForm() {
         }
     }
 
-    if(loading) return <p>Chargement...</p>
+    if(loading) return <p className="splash">Chargement...</p>
 
   return (
-    <>
-        <form onSubmit={handleSubmit}>
-            <h1>Welcome back !</h1>
-            
-            <label htmlFor="name">Username</label>
-            <input type="text" name="name" placeholder="Enter your username" onChange={(e) => setName(e.target.value)} />
+    <div className="authbox">
+        <p className="logo" aria-hidden="true">SlugMan</p>
+        <form className="authform" onSubmit={handleSubmit}>
+            <h1 className="authform__title">Create your account</h1>
 
-            <label htmlFor="mail">Mail</label>
-            <input type="email" name="mail" placeholder="Enter your mail adress" onChange={(e) => setEmail(e.target.value)} />
+            <div className="authform__field">
+                <label htmlFor="register-name">Username</label>
+                <input id="register-name" type="text" name="name" placeholder="Enter your username" autoComplete="username" required onChange={(e) => setName(e.target.value)} />
+            </div>
 
-            <label htmlFor="password">Password</label>
-            <input type="password" name="password" placeholder="Enter your password" onChange={(e) => setPassword(e.target.value)} />
+            <div className="authform__field">
+                <label htmlFor="register-mail">Mail</label>
+                <input id="register-mail" type="email" name="mail" placeholder="Enter your mail adress" autoComplete="email" required onChange={(e) => setEmail(e.target.value)} />
+            </div>
 
-            <button type="submit">Register</button>
-            <div>
+            <div className="authform__field">
+                <label htmlFor="register-password">Password</label>
+                <input id="register-password" type="password" name="password" placeholder="Enter your password" autoComplete="new-password" required onChange={(e) => setPassword(e.target.value)} />
+            </div>
+
+            {error && <p className="authform__error" role="alert">{error}</p>}
+
+            <button className="btn" type="submit">Register</button>
+            <div className="authform__switch">
                 <p>Already have an account ? </p>
                 <Link to="/login">Login</Link>
             </div>
         </form>
-        <p>{error}</p>
-    </>
+    </div>
   )
 }
 

@@ -39,27 +39,33 @@ function LoginForm() {
         }
     }
 
-    if(loading) return <p>Chargement...</p>
+    if(loading) return <p className="splash">Chargement...</p>
 
   return (
-    <>
-        <form onSubmit={handleSubmit}>
-            <h1>Welcome back !</h1>
-            
-            <label htmlFor="mail">Mail</label>
-            <input type="email" name="mail" placeholder="Enter your mail adress" onChange={(e) => setEmail(e.target.value)} />
+    <div className="authbox">
+        <p className="logo" aria-hidden="true">SlugMan</p>
+        <form className="authform" onSubmit={handleSubmit}>
+            <h1 className="authform__title">Welcome back !</h1>
 
-            <label htmlFor="password">Password</label>
-            <input type="password" name="password" placeholder="Enter your password" onChange={(e) => setPassword(e.target.value)} />
+            <div className="authform__field">
+                <label htmlFor="login-mail">Mail</label>
+                <input id="login-mail" type="email" name="mail" placeholder="Enter your mail adress" autoComplete="email" required onChange={(e) => setEmail(e.target.value)} />
+            </div>
 
-            <button type="submit">Login</button>
-            <div>
+            <div className="authform__field">
+                <label htmlFor="login-password">Password</label>
+                <input id="login-password" type="password" name="password" placeholder="Enter your password" autoComplete="current-password" required onChange={(e) => setPassword(e.target.value)} />
+            </div>
+
+            {error && <p className="authform__error" role="alert">{error}</p>}
+
+            <button className="btn" type="submit">Login</button>
+            <div className="authform__switch">
                 <p>Don't have an account ? </p>
                 <Link to="/register">Register</Link>
             </div>
         </form>
-        <p>{error}</p>
-    </>
+    </div>
   )
 }
 
