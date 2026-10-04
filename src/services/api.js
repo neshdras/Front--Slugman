@@ -1,5 +1,5 @@
 // src/services/api.js
-export const API_URL = import.meta.env.VITE_API_URL ?? 'https://back-slugman.vercel.app/api/v1'
+export const API_URL = (import.meta.env.VITE_API_URL || 'https://back-slugman.vercel.app/api/v1').replace(/\/+$/, '')
 export const TOKEN_KEY = 'vn_token'
 
 export async function api(path, { method = 'GET', body, signal } = {}) {
