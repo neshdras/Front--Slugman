@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useGame } from '../context/GameContext.jsx';
-
+import mapImage from '../assets/map.webp';
 // Image de la carte : à placer dans /public (ou adapter le chemin).
 // Les positions des pastilles (c.pin.x / c.pin.y, en %) sont relatives à CETTE image.
-const MAP_IMAGE = '../assets/map.webp';
+const MAP_IMAGE = mapImage;
 
 function statusOf(ch, { progress, session, isUnlocked }) {
   if (progress?.story.completed.includes(ch.id)) return 'done';
