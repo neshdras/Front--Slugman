@@ -12,6 +12,7 @@ export async function api(path, { method = 'GET', body, signal } = {}) {
     headers: {
       ...(body ? { 'Content-Type': 'application/json' } : {}),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      "Content-Type": "application/json"
     },
     body: body ? JSON.stringify(body) : undefined,
     signal,
