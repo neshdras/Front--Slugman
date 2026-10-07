@@ -5,7 +5,7 @@ import { useGame } from '../context/GameContext.jsx';
 
 // Image de la carte : à placer dans /public (ou adapter le chemin).
 // Les positions des pastilles (c.pin.x / c.pin.y, en %) sont relatives à CETTE image.
-const MAP_IMAGE = '../../public/map.webp';
+const MAP_IMAGE = '../assets/map.webp';
 
 function statusOf(ch, { progress, session, isUnlocked }) {
   if (progress?.story.completed.includes(ch.id)) return 'done';
