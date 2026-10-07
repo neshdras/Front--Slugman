@@ -265,6 +265,7 @@
       "type": "scene",
       "speaker": "La mère",
       "text": "« Je t'ai vu hier, t'es un gros malade mental toi ! Qu'est-ce que tu fais avec un enfant ?! » Elle appelle la police et hurle. Tu sais plus où te mettre...",
+      "on_enter": { "score": -8 },
       "choices": [
         { "id": "mh_justifier", "label": "Tu essaies de te justifier.", "next": "mere_justifier" },
         { "id": "mh_fuir", "label": "Tu te barres en courant, mort de honte.", "next": "mere_fuite" },
@@ -277,7 +278,6 @@
       "title": "Perdu",
       "pose": "perdu",
       "text": "Tu essaies de te justifier. La mère fait mine de comprendre, discute avec toi pour gagner du temps, le temps que la police arrive. Tu finis en garde à vue...",
-      "on_enter": { "score": -6 },
       "scope": "chapter",
       "dev_note": "Perdu (partie ou chapitre ?) : à décider."
     },
@@ -285,7 +285,7 @@
     "mere_fuite": {
       "type": "scene",
       "text": "Tu te barres en courant, mort de honte. Le petit reste planté là.",
-      "on_enter": { "score": -8, "set_flags": { "gamin_avec_toi": false } },
+      "on_enter": { "score": -6, "set_flags": { "gamin_avec_toi": false } },
       "next": "checkpoint_jardin"
     },
 
@@ -364,7 +364,7 @@
       "type": "scene",
       "speaker": "Malala",
       "text": "Malala s'énerve (à raison), et t'explique que t'es un gros malade et qu'elle traînera définitivement plus avec toi et Boro, et encore moins quelconque relation.",
-      "on_enter": { "set_flags": { "malala_rupture": true } },
+      "on_enter": { "score": -8, "set_flags": { "malala_rupture": true } },
       "choices": [
         { "id": "mc_insulte", "label": "« Pfff, les femmes, toutes les mêmes ! Ntm toi et tes changements d'humeur sans raison ! T'as juste tes règles ! »", "next": "malala_gifle" },
         { "id": "mc_adieux", "label": "« Ok ok c'est bon j'ai compris, je me casse. Jsp pas pourquoi t'es si méchante avec moi, je t'ai toujours bien traitée, en tout cas t'auras toujours ta place avec moi et Boro. »", "next": "malala_adieux" }
@@ -482,7 +482,7 @@
       "text": "« Eh viens ici toi ! Viens viens tkt. C'est toi qui as emmerdé mon p'tit frère ? Non non me dis pas non, je sais que c'est toi, il vient de me le dire. »",
       "choices": [
         { "id": "bgf_excuses", "label": "Tu t'excuses et expliques que t'as changé, et que t'as plus important à faire. Il te demande une compensation, tu acceptes.", "next": "banc_compensation" },
-        { "id": "bgf_2v3", "label": "C'est fini de se laisser marcher dessus. Tu réponds, et proposes un 2v3 dans un coin tranquille. T'expliques à Boro que pour changer le monde, faut commencer par se faire respecter. Vous vous éloignez, la bagarre éclate.", "next": "banc_bagarre" }
+        { "id": "bgf_2v3", "label": "C'est fini de se laisser marcher dessus. Tu réponds, et proposes un 2v3 dans un coin tranquille. T'expliques à Boro que pour changer le monde, faut commencer par se faire respecter.", "next": "banc_bagarre" }
       ]
     },
 
@@ -497,7 +497,7 @@
     "banc_sans_portefeuille": {
       "type": "scene",
       "text": "Tu te rends compte que tu n'as plus de quoi payer. L'un d'eux te crache au visage en te traitant de clochard.",
-      "on_enter": { "score": -11 },
+      "on_enter": { "score": -3 },
       "next": "jardin_ronde"
     },
 
@@ -511,8 +511,8 @@
     "banc_bagarre": {
       "type": "scene",
       "pose": "bagarre",
-      "text": "Vous êtes trop forts à 2, vous leur laissez aucune chance. Leur petit frère part en courant chercher du renfort. Maintenant, toute la famille vous recherche. Vous retournez à vos occupations.",
-      "on_enter": { "score": 7, "set_flags": { "famille_gamin_te_cherche": true } },
+      "text": "La bagarre éclate. Vous êtes trop forts à 2, vous leur laissez aucune chance. Leur petit frère part en courant chercher du renfort. Maintenant, toute la famille vous recherche. Vous retournez à vos occupations.",
+      "on_enter": { "score": -12, "set_flags": { "famille_gamin_te_cherche": true } },
       "next": "jardin_ronde"
     },
 
@@ -571,6 +571,7 @@
     "mission_surveillance": {
       "type": "scene",
       "pose": "slugman_base",
+      "on_enter": { "score": 10 },
       "text": "Vous partez donc en mission de surveillance. Vous décidez de faire des tours du jardin, boire des cafés, manger des glaces, tout en gardant l'œil ouvert.",
       "next": "reperage"
 
@@ -600,6 +601,7 @@
       "type": "branch",
       "pose": "bagarre",
       "text": "Une grosse rixe éclate ; les passants crient, les loubards se défendent. Ta super bave te permet d'esquiver les coups les plus dangereux, mais tu en encaisses quand même pas mal. Boro domine ses adversaires grâce à sa peau métallique, mais commence à faiblir sur la fin. Alors que tu penses gagner, tu entends un bruit derrière toi qui t'oblige à t'arrêter net :",
+      "on_enter": { "score": -16 },
       "branches": [
         { "condition": { "flag": "gamin_avec_toi" }, "next": "rixe_gamin" },
         { "condition": { "flag": "avis_de_recherche" }, "next": "rixe_police_ferme" }
@@ -674,7 +676,7 @@
       "pose": "parterre",
       "bg": "ruellejour", 
       "text": "En passant dans une ruelle, tu t'éclates le front par terre. « Allez, mange le béton, bouffon ! » C'était le SDF de l'autre soir... En te relevant, tu regardes au loin : tu les as perdus... Tu continues quand même. Ton but n'a pas changé.",
-      "on_enter": { "score": -16 },
+      "on_enter": { "score": -3 },
       "next": "indices"
     },
 
@@ -702,7 +704,7 @@
       "bg": "bar", 
       "pose": "boit",
       "text": "Vous allez vous poser au bar de la Marine. La liste attendra.",
-      "on_enter": { "score": -2 },
+      "on_enter": { "score": -7 },
       "return_to": "map"
     },
 
