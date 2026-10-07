@@ -1,5 +1,5 @@
 // src/services/api.js
-const host = (import.meta.env.VITE_API_URL || 'https://back-slugman.vercel.app')
+const host = (import.meta.env.VITE_API_URL || 'https://slugman-back.vercel.app')
   .replace(/\/+$/, '')
   .replace(/\/api\/v1$/, '')
 export const API_URL = `${host}/api/v1`
