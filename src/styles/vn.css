@@ -59,7 +59,7 @@ button { font: inherit; cursor: pointer; }
 .topbar__who { margin: 0 auto 0 0; opacity: .8; }
 
 /* la carte est une image ; les pastilles sont positionnées en % par-dessus */
-.map { position: relative; border: 3px solid var(--papier); background: var(--plan); }
+.map { position: relative; border: 3px solid var(--papier); background: var(--plan); height: fit-content;}
 .map__img { display: block; width: 100%; height: auto; user-select: none; pointer-events: none; }
 .map__more { position: absolute; right: 1rem; bottom: .6rem; margin: 0; padding: .2rem .6rem; background: var(--nuit); font-style: italic; }
 

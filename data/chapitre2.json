@@ -114,7 +114,7 @@
       "bg": "ruejour",
       "pose": "slugman_base",
       "title": "Chapitre 2 : Jardin des melons chauds",
-      "text": "Tu décides donc de te diriger vers le jardin des melons chauds. Tu appelles Boro et Malala pour traîner avec eux, mais seul Boro accepte. Tu le rejoins là-bas. Sur le chemin, tu décides de :",
+      "text": "Tu décides donc de te diriger vers le jardin des melons chauds. Tu appelles Malala et Boro, ton meilleur pote, un robot vraiment trop humain, pour traîner avec eux comme vous avez l'habitude de faire. Seul Boro accepte. Tu le rejoins là-bas. Sur le chemin, tu décides de :",
       "choices": [
         { "id": "intro_malala", "label": "Essayer de convaincre Malala de venir aussi", "next": "malala_appel" },
         { "id": "intro_justicier", "label": "Passer prendre ton nouveau pote le justicier", "next": "detour_justicier", "condition": { "ref": "bon_terme_inconnu" } },
